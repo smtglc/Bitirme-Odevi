@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol - Evde Sağlık</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body>
+    <div class="split-screen-container">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <div class="template-logo">
+                Evde Sağlık
+            </div>
+
+            <div class="left-content">
+                <div class="branding-text">
+                    <h1>Keep it special</h1>
+                    <p>Capture your personal memories in a unique way, anywhere.</p>
+                </div>
+            </div>
+
+            <div class="social-links">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="auth-box" style="max-width: 500px;">
+                <div class="right-panel-logo">
+                    Evde Sağlık
+                </div>
+
+                <div class="auth-header">
+                    <h2 class="auth-title">Kayıt Ol</h2>
+                    <p class="auth-subtitle" id="roleText">Hesap oluşturun</p>
+                </div>
+
+                <form id="registerForm">
+                    <input type="hidden" id="role">
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label>Ad</label>
+                            <input type="text" id="firstName" class="form-input" required placeholder="Adınız">
+                        </div>
+                        <div class="form-group">
+                            <label>Soyad</label>
+                            <input type="text" id="lastName" class="form-input" required placeholder="Soyadınız">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>E-posta</label>
+                        <input type="email" id="email" class="form-input" required placeholder="Email">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Telefon</label>
+                        <input type="tel" id="phoneNumber" class="form-input" required placeholder="Telefon">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Şifre</label>
+                        <input type="password" id="password" class="form-input" required placeholder="Şifre">
+                        <small style="color: #666; font-size: 0.8rem; display: block; margin-top: 0.25rem;">
+                            En az 6 karakter, büyük/küçük harf ve rakam
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Şifre Tekrar</label>
+                        <input type="password" id="confirmPassword" class="form-input" required
+                            placeholder="Şifre Tekrar">
+                    </div>
+
+                    <button type="submit" class="btn-primary">KAYIT OL</button>
+                </form>
+
+                <div class="auth-links">
+                    Zaten hesabınız var mı? <a href="login.html">Giriş Yapın</a>
+                    <br><br>
+                    <a href="index.html">← Ana Sayfaya Dön</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Get role from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const role = urlParams.get('role') || 'patient';
+
+        // Set role
+        const roleCapitalized = role.charAt(0).toUpperCase() + role.slice(1);
+        document.getElementById('role').value = roleCapitalized;
+        document.getElementById('roleText').textContent = roleCapitalized === 'Patient' ? 'Hasta Hesabı Oluşturun' : 'Doktor Hesabı Oluşturun';
+
+        const form = document.getElementById('registerForm');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                alert('Şifreler eşleşmiyor!');
+                return;
+            }
+
+            const userData = {
+                email: document.getElementById('email').value,
+                password: password,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                role: document.getElementById('role').value
+            };
+
+            try {
+                const response = await api.auth.register(userData);
+
+                if (response.success) {
+                    alert('Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...');
+                    setTimeout(() => {
+                        window.location.href = `login.html?role=${role}`;
+                    }, 2000);
+                } else {
+                    alert(response.message || 'Kayıt başarısız!');
+                }
+            } catch (error) {
+                alert(error.message || 'Kayıt olurken bir hata oluştu!');
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,6 @@
+@EvdeSağlık_HostAddress = http://localhost:5208
+
+GET {{EvdeSağlık_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,534 @@
+2025-11-28 00:00:08.199 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - null null
+2025-11-28 00:00:08.263 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:00:08.272 +03:00 [INF] HTTP OPTIONS /api/doctor/appointments responded 204 in 9.2137 ms
+2025-11-28 00:00:08.283 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - 204 null null 83.581ms
+2025-11-28 00:00:08.308 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/appointments - application/json null
+2025-11-28 00:00:08.329 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:00:08.333 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:00:08.340 +03:00 [INF] Route matched with {action = "GetMyAppointments", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto]]]] GetMyAppointments() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:00:08.381 +03:00 [INF] Executed DbCommand (30ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:00:08.433 +03:00 [INF] Executed DbCommand (33ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[CreatedAt], [a].[DoctorId], [a].[DoctorNotes], [a].[DurationMinutes], [a].[PatientId], [a].[PatientNotes], [a].[ScheduledDateTime], [a].[ServiceId], [a].[Status], [a].[TotalAmount], [a].[UpdatedAt], [p].[Id], [p].[Address], [p].[CreatedAt], [p].[DateOfBirth], [p].[EmergencyContact], [p].[MedicalHistory], [p].[UpdatedAt], [p].[UserId], [a0].[Id], [a0].[AccessFailedCount], [a0].[ConcurrencyStamp], [a0].[CreatedAt], [a0].[Email], [a0].[EmailConfirmed], [a0].[FirstName], [a0].[IsActive], [a0].[LastName], [a0].[LockoutEnabled], [a0].[LockoutEnd], [a0].[NormalizedEmail], [a0].[NormalizedUserName], [a0].[PasswordHash], [a0].[PhoneNumber], [a0].[PhoneNumberConfirmed], [a0].[SecurityStamp], [a0].[TwoFactorEnabled], [a0].[UpdatedAt], [a0].[UserName], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a1].[Id], [a1].[AccessFailedCount], [a1].[ConcurrencyStamp], [a1].[CreatedAt], [a1].[Email], [a1].[EmailConfirmed], [a1].[FirstName], [a1].[IsActive], [a1].[LastName], [a1].[LockoutEnabled], [a1].[LockoutEnd], [a1].[NormalizedEmail], [a1].[NormalizedUserName], [a1].[PasswordHash], [a1].[PhoneNumber], [a1].[PhoneNumberConfirmed], [a1].[SecurityStamp], [a1].[TwoFactorEnabled], [a1].[UpdatedAt], [a1].[UserName], [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[Id]
+INNER JOIN [AspNetUsers] AS [a0] ON [p].[UserId] = [a0].[Id]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a1] ON [d].[UserId] = [a1].[Id]
+INNER JOIN [Services] AS [s] ON [a].[ServiceId] = [s].[Id]
+WHERE [a].[DoctorId] = @__doctorId_0
+ORDER BY [a].[ScheduledDateTime] DESC
+2025-11-28 00:00:08.441 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:00:08.447 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers) in 97.8789ms
+2025-11-28 00:00:08.454 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:00:08.458 +03:00 [INF] HTTP GET /api/doctor/appointments responded 200 in 128.2085 ms
+2025-11-28 00:00:08.466 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/appointments - 200 null application/json; charset=utf-8 158.6663ms
+2025-11-28 00:01:52.162 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - null null
+2025-11-28 00:01:52.188 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:01:52.195 +03:00 [INF] HTTP OPTIONS /api/doctor/appointments responded 204 in 6.5817 ms
+2025-11-28 00:01:52.204 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - 204 null null 42.6454ms
+2025-11-28 00:01:52.209 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/appointments - application/json null
+2025-11-28 00:01:52.225 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:01:52.229 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:01:52.232 +03:00 [INF] Route matched with {action = "GetMyAppointments", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto]]]] GetMyAppointments() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:01:52.255 +03:00 [INF] Executed DbCommand (17ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:01:52.317 +03:00 [INF] Executed DbCommand (53ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[CreatedAt], [a].[DoctorId], [a].[DoctorNotes], [a].[DurationMinutes], [a].[PatientId], [a].[PatientNotes], [a].[ScheduledDateTime], [a].[ServiceId], [a].[Status], [a].[TotalAmount], [a].[UpdatedAt], [p].[Id], [p].[Address], [p].[CreatedAt], [p].[DateOfBirth], [p].[EmergencyContact], [p].[MedicalHistory], [p].[UpdatedAt], [p].[UserId], [a0].[Id], [a0].[AccessFailedCount], [a0].[ConcurrencyStamp], [a0].[CreatedAt], [a0].[Email], [a0].[EmailConfirmed], [a0].[FirstName], [a0].[IsActive], [a0].[LastName], [a0].[LockoutEnabled], [a0].[LockoutEnd], [a0].[NormalizedEmail], [a0].[NormalizedUserName], [a0].[PasswordHash], [a0].[PhoneNumber], [a0].[PhoneNumberConfirmed], [a0].[SecurityStamp], [a0].[TwoFactorEnabled], [a0].[UpdatedAt], [a0].[UserName], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a1].[Id], [a1].[AccessFailedCount], [a1].[ConcurrencyStamp], [a1].[CreatedAt], [a1].[Email], [a1].[EmailConfirmed], [a1].[FirstName], [a1].[IsActive], [a1].[LastName], [a1].[LockoutEnabled], [a1].[LockoutEnd], [a1].[NormalizedEmail], [a1].[NormalizedUserName], [a1].[PasswordHash], [a1].[PhoneNumber], [a1].[PhoneNumberConfirmed], [a1].[SecurityStamp], [a1].[TwoFactorEnabled], [a1].[UpdatedAt], [a1].[UserName], [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[Id]
+INNER JOIN [AspNetUsers] AS [a0] ON [p].[UserId] = [a0].[Id]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a1] ON [d].[UserId] = [a1].[Id]
+INNER JOIN [Services] AS [s] ON [a].[ServiceId] = [s].[Id]
+WHERE [a].[DoctorId] = @__doctorId_0
+ORDER BY [a].[ScheduledDateTime] DESC
+2025-11-28 00:01:52.331 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:01:52.341 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers) in 104.5978ms
+2025-11-28 00:01:52.346 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:01:52.351 +03:00 [INF] HTTP GET /api/doctor/appointments responded 200 in 126.7622 ms
+2025-11-28 00:01:52.355 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/appointments - 200 null application/json; charset=utf-8 146.1797ms
+2025-11-28 00:02:10.940 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - null null
+2025-11-28 00:02:10.956 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:02:10.960 +03:00 [INF] HTTP OPTIONS /api/doctor/appointments responded 204 in 4.7574 ms
+2025-11-28 00:02:10.966 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - 204 null null 27.6583ms
+2025-11-28 00:02:10.996 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/appointments - application/json null
+2025-11-28 00:02:11.004 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:02:11.007 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:02:11.011 +03:00 [INF] Route matched with {action = "GetMyAppointments", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto]]]] GetMyAppointments() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:02:11.035 +03:00 [INF] Executed DbCommand (16ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:02:11.182 +03:00 [INF] Executed DbCommand (135ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[CreatedAt], [a].[DoctorId], [a].[DoctorNotes], [a].[DurationMinutes], [a].[PatientId], [a].[PatientNotes], [a].[ScheduledDateTime], [a].[ServiceId], [a].[Status], [a].[TotalAmount], [a].[UpdatedAt], [p].[Id], [p].[Address], [p].[CreatedAt], [p].[DateOfBirth], [p].[EmergencyContact], [p].[MedicalHistory], [p].[UpdatedAt], [p].[UserId], [a0].[Id], [a0].[AccessFailedCount], [a0].[ConcurrencyStamp], [a0].[CreatedAt], [a0].[Email], [a0].[EmailConfirmed], [a0].[FirstName], [a0].[IsActive], [a0].[LastName], [a0].[LockoutEnabled], [a0].[LockoutEnd], [a0].[NormalizedEmail], [a0].[NormalizedUserName], [a0].[PasswordHash], [a0].[PhoneNumber], [a0].[PhoneNumberConfirmed], [a0].[SecurityStamp], [a0].[TwoFactorEnabled], [a0].[UpdatedAt], [a0].[UserName], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a1].[Id], [a1].[AccessFailedCount], [a1].[ConcurrencyStamp], [a1].[CreatedAt], [a1].[Email], [a1].[EmailConfirmed], [a1].[FirstName], [a1].[IsActive], [a1].[LastName], [a1].[LockoutEnabled], [a1].[LockoutEnd], [a1].[NormalizedEmail], [a1].[NormalizedUserName], [a1].[PasswordHash], [a1].[PhoneNumber], [a1].[PhoneNumberConfirmed], [a1].[SecurityStamp], [a1].[TwoFactorEnabled], [a1].[UpdatedAt], [a1].[UserName], [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[Id]
+INNER JOIN [AspNetUsers] AS [a0] ON [p].[UserId] = [a0].[Id]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a1] ON [d].[UserId] = [a1].[Id]
+INNER JOIN [Services] AS [s] ON [a].[ServiceId] = [s].[Id]
+WHERE [a].[DoctorId] = @__doctorId_0
+ORDER BY [a].[ScheduledDateTime] DESC
+2025-11-28 00:02:11.189 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:02:11.194 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers) in 176.704ms
+2025-11-28 00:02:11.199 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:02:11.203 +03:00 [INF] HTTP GET /api/doctor/appointments responded 200 in 198.7625 ms
+2025-11-28 00:02:11.209 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/appointments - 200 null application/json; charset=utf-8 213.7575ms
+2025-11-28 00:02:12.235 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/services - null null
+2025-11-28 00:02:12.242 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:02:12.244 +03:00 [INF] HTTP OPTIONS /api/doctor/services responded 204 in 2.2120 ms
+2025-11-28 00:02:12.249 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/services - 204 null null 14.9905ms
+2025-11-28 00:02:12.274 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/services - application/json null
+2025-11-28 00:02:12.281 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:02:12.285 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers)'
+2025-11-28 00:02:12.288 +03:00 [INF] Route matched with {action = "GetMyServices", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Service.ServiceListDto]]]] GetMyServices() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:02:12.305 +03:00 [INF] Executed DbCommand (10ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:02:12.326 +03:00 [INF] Executed DbCommand (14ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Services] AS [s]
+INNER JOIN [Doctors] AS [d] ON [s].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [s].[DoctorId] = @__doctorId_0
+ORDER BY [s].[CreatedAt] DESC
+2025-11-28 00:02:12.334 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Service.ServiceListDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:02:12.338 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers) in 45.0494ms
+2025-11-28 00:02:12.342 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers)'
+2025-11-28 00:02:12.345 +03:00 [INF] HTTP GET /api/doctor/services responded 200 in 63.7811 ms
+2025-11-28 00:02:12.353 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/services - 200 null application/json; charset=utf-8 79.8149ms
+2025-11-28 00:02:21.571 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - null null
+2025-11-28 00:02:21.578 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:02:21.580 +03:00 [INF] HTTP OPTIONS /api/doctor/appointments responded 204 in 2.4548 ms
+2025-11-28 00:02:21.587 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - 204 null null 16.3952ms
+2025-11-28 00:02:21.619 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/appointments - application/json null
+2025-11-28 00:02:21.627 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:02:21.630 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:02:21.634 +03:00 [INF] Route matched with {action = "GetMyAppointments", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto]]]] GetMyAppointments() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:02:21.659 +03:00 [INF] Executed DbCommand (18ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:02:21.693 +03:00 [INF] Executed DbCommand (26ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[CreatedAt], [a].[DoctorId], [a].[DoctorNotes], [a].[DurationMinutes], [a].[PatientId], [a].[PatientNotes], [a].[ScheduledDateTime], [a].[ServiceId], [a].[Status], [a].[TotalAmount], [a].[UpdatedAt], [p].[Id], [p].[Address], [p].[CreatedAt], [p].[DateOfBirth], [p].[EmergencyContact], [p].[MedicalHistory], [p].[UpdatedAt], [p].[UserId], [a0].[Id], [a0].[AccessFailedCount], [a0].[ConcurrencyStamp], [a0].[CreatedAt], [a0].[Email], [a0].[EmailConfirmed], [a0].[FirstName], [a0].[IsActive], [a0].[LastName], [a0].[LockoutEnabled], [a0].[LockoutEnd], [a0].[NormalizedEmail], [a0].[NormalizedUserName], [a0].[PasswordHash], [a0].[PhoneNumber], [a0].[PhoneNumberConfirmed], [a0].[SecurityStamp], [a0].[TwoFactorEnabled], [a0].[UpdatedAt], [a0].[UserName], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a1].[Id], [a1].[AccessFailedCount], [a1].[ConcurrencyStamp], [a1].[CreatedAt], [a1].[Email], [a1].[EmailConfirmed], [a1].[FirstName], [a1].[IsActive], [a1].[LastName], [a1].[LockoutEnabled], [a1].[LockoutEnd], [a1].[NormalizedEmail], [a1].[NormalizedUserName], [a1].[PasswordHash], [a1].[PhoneNumber], [a1].[PhoneNumberConfirmed], [a1].[SecurityStamp], [a1].[TwoFactorEnabled], [a1].[UpdatedAt], [a1].[UserName], [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[Id]
+INNER JOIN [AspNetUsers] AS [a0] ON [p].[UserId] = [a0].[Id]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a1] ON [d].[UserId] = [a1].[Id]
+INNER JOIN [Services] AS [s] ON [a].[ServiceId] = [s].[Id]
+WHERE [a].[DoctorId] = @__doctorId_0
+ORDER BY [a].[ScheduledDateTime] DESC
+2025-11-28 00:02:21.699 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:02:21.703 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers) in 63.8042ms
+2025-11-28 00:02:21.708 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:02:21.711 +03:00 [INF] HTTP GET /api/doctor/appointments responded 200 in 83.4147 ms
+2025-11-28 00:02:21.715 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/appointments - 200 null application/json; charset=utf-8 95.4924ms
+2025-11-28 00:02:23.016 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/services - null null
+2025-11-28 00:02:23.029 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:02:23.032 +03:00 [INF] HTTP OPTIONS /api/doctor/services responded 204 in 2.9765 ms
+2025-11-28 00:02:23.038 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/services - 204 null null 22.438ms
+2025-11-28 00:02:23.045 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/services - application/json null
+2025-11-28 00:02:23.059 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:02:23.061 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers)'
+2025-11-28 00:02:23.064 +03:00 [INF] Route matched with {action = "GetMyServices", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Service.ServiceListDto]]]] GetMyServices() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:02:23.086 +03:00 [INF] Executed DbCommand (13ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:02:23.110 +03:00 [INF] Executed DbCommand (15ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Services] AS [s]
+INNER JOIN [Doctors] AS [d] ON [s].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [s].[DoctorId] = @__doctorId_0
+ORDER BY [s].[CreatedAt] DESC
+2025-11-28 00:02:23.118 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Service.ServiceListDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:02:23.123 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers) in 51.4117ms
+2025-11-28 00:02:23.127 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers)'
+2025-11-28 00:02:23.130 +03:00 [INF] HTTP GET /api/doctor/services responded 200 in 71.5667 ms
+2025-11-28 00:02:23.136 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/services - 200 null application/json; charset=utf-8 90.7526ms
+2025-11-28 00:02:29.481 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/services/d8fb16ad-bd06-4cef-b9fd-d4ce1f820554 - null null
+2025-11-28 00:02:29.487 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:02:29.489 +03:00 [INF] HTTP OPTIONS /api/doctor/services/d8fb16ad-bd06-4cef-b9fd-d4ce1f820554 responded 204 in 1.5175 ms
+2025-11-28 00:02:29.493 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/services/d8fb16ad-bd06-4cef-b9fd-d4ce1f820554 - 204 null null 11.9095ms
+2025-11-28 00:02:29.497 +03:00 [INF] Request starting HTTP/2 PUT https://localhost:7291/api/doctor/services/d8fb16ad-bd06-4cef-b9fd-d4ce1f820554 - application/json 181
+2025-11-28 00:02:29.516 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:02:29.518 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.UpdateService (EvdeSaglik.Controllers)'
+2025-11-28 00:02:29.527 +03:00 [INF] Route matched with {action = "UpdateService", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[EvdeSaglik.Service.DTOs.Service.ServiceDetailDto]]] UpdateService(System.Guid, EvdeSaglik.Service.DTOs.Doctor.UpdateDoctorServiceDto) on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:02:29.553 +03:00 [INF] Executed DbCommand (9ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:02:29.569 +03:00 [INF] Executed DbCommand (9ms) [Parameters=[@__id_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Services] AS [s]
+INNER JOIN [Doctors] AS [d] ON [s].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [s].[Id] = @__id_0
+2025-11-28 00:02:29.587 +03:00 [INF] Executed DbCommand (10ms) [Parameters=[@p9='?' (DbType = Guid), @p0='?' (Precision = 18) (Scale = 2) (DbType = Decimal), @p1='?' (DbType = DateTime2), @p2='?' (Size = 1000), @p3='?' (DbType = Guid), @p4='?' (DbType = Int32), @p5='?' (DbType = Boolean), @p6='?' (Size = 200), @p7='?' (DbType = Int32), @p8='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+UPDATE [Services] SET [BasePrice] = @p0, [CreatedAt] = @p1, [Description] = @p2, [DoctorId] = @p3, [DurationMinutes] = @p4, [IsActive] = @p5, [Name] = @p6, [Specialization] = @p7, [UpdatedAt] = @p8
+OUTPUT 1
+WHERE [Id] = @p9;
+2025-11-28 00:02:29.595 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[EvdeSaglik.Service.DTOs.Service.ServiceDetailDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-11-28 00:02:29.601 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.UpdateService (EvdeSaglik.Controllers) in 70.783ms
+2025-11-28 00:02:29.605 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.UpdateService (EvdeSaglik.Controllers)'
+2025-11-28 00:02:29.607 +03:00 [INF] HTTP PUT /api/doctor/services/d8fb16ad-bd06-4cef-b9fd-d4ce1f820554 responded 200 in 91.4235 ms
+2025-11-28 00:02:29.612 +03:00 [INF] Request finished HTTP/2 PUT https://localhost:7291/api/doctor/services/d8fb16ad-bd06-4cef-b9fd-d4ce1f820554 - 200 null application/json; charset=utf-8 114.7058ms
+2025-11-28 00:02:29.616 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/services - null null
+2025-11-28 00:02:29.625 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:02:29.627 +03:00 [INF] HTTP OPTIONS /api/doctor/services responded 204 in 1.8129 ms
+2025-11-28 00:02:29.631 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/services - 204 null null 15.2517ms
+2025-11-28 00:02:29.635 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/services - application/json null
+2025-11-28 00:02:29.648 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:02:29.651 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers)'
+2025-11-28 00:02:29.654 +03:00 [INF] Route matched with {action = "GetMyServices", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Service.ServiceListDto]]]] GetMyServices() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:02:29.670 +03:00 [INF] Executed DbCommand (9ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:02:29.688 +03:00 [INF] Executed DbCommand (11ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Services] AS [s]
+INNER JOIN [Doctors] AS [d] ON [s].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [s].[DoctorId] = @__doctorId_0
+ORDER BY [s].[CreatedAt] DESC
+2025-11-28 00:02:29.696 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Service.ServiceListDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:02:29.699 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers) in 39.133ms
+2025-11-28 00:02:29.703 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers)'
+2025-11-28 00:02:29.706 +03:00 [INF] HTTP GET /api/doctor/services responded 200 in 57.3271 ms
+2025-11-28 00:02:29.712 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/services - 200 null application/json; charset=utf-8 77.3287ms
+2025-11-28 00:02:34.938 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - null null
+2025-11-28 00:02:34.946 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:02:34.949 +03:00 [INF] HTTP OPTIONS /api/doctor/appointments responded 204 in 3.8169 ms
+2025-11-28 00:02:34.955 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - 204 null null 17.375ms
+2025-11-28 00:02:34.960 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/appointments - application/json null
+2025-11-28 00:02:34.971 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:02:34.974 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:02:34.977 +03:00 [INF] Route matched with {action = "GetMyAppointments", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto]]]] GetMyAppointments() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:02:34.994 +03:00 [INF] Executed DbCommand (10ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:02:35.147 +03:00 [INF] Executed DbCommand (146ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[CreatedAt], [a].[DoctorId], [a].[DoctorNotes], [a].[DurationMinutes], [a].[PatientId], [a].[PatientNotes], [a].[ScheduledDateTime], [a].[ServiceId], [a].[Status], [a].[TotalAmount], [a].[UpdatedAt], [p].[Id], [p].[Address], [p].[CreatedAt], [p].[DateOfBirth], [p].[EmergencyContact], [p].[MedicalHistory], [p].[UpdatedAt], [p].[UserId], [a0].[Id], [a0].[AccessFailedCount], [a0].[ConcurrencyStamp], [a0].[CreatedAt], [a0].[Email], [a0].[EmailConfirmed], [a0].[FirstName], [a0].[IsActive], [a0].[LastName], [a0].[LockoutEnabled], [a0].[LockoutEnd], [a0].[NormalizedEmail], [a0].[NormalizedUserName], [a0].[PasswordHash], [a0].[PhoneNumber], [a0].[PhoneNumberConfirmed], [a0].[SecurityStamp], [a0].[TwoFactorEnabled], [a0].[UpdatedAt], [a0].[UserName], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a1].[Id], [a1].[AccessFailedCount], [a1].[ConcurrencyStamp], [a1].[CreatedAt], [a1].[Email], [a1].[EmailConfirmed], [a1].[FirstName], [a1].[IsActive], [a1].[LastName], [a1].[LockoutEnabled], [a1].[LockoutEnd], [a1].[NormalizedEmail], [a1].[NormalizedUserName], [a1].[PasswordHash], [a1].[PhoneNumber], [a1].[PhoneNumberConfirmed], [a1].[SecurityStamp], [a1].[TwoFactorEnabled], [a1].[UpdatedAt], [a1].[UserName], [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[Id]
+INNER JOIN [AspNetUsers] AS [a0] ON [p].[UserId] = [a0].[Id]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a1] ON [d].[UserId] = [a1].[Id]
+INNER JOIN [Services] AS [s] ON [a].[ServiceId] = [s].[Id]
+WHERE [a].[DoctorId] = @__doctorId_0
+ORDER BY [a].[ScheduledDateTime] DESC
+2025-11-28 00:02:35.155 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:02:35.159 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers) in 176.6799ms
+2025-11-28 00:02:35.164 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:02:35.168 +03:00 [INF] HTTP GET /api/doctor/appointments responded 200 in 197.0558 ms
+2025-11-28 00:02:35.173 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/appointments - 200 null application/json; charset=utf-8 213.7556ms
+2025-11-28 00:03:31.127 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/services - null null
+2025-11-28 00:03:31.151 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:03:31.154 +03:00 [INF] HTTP OPTIONS /api/doctor/services responded 204 in 2.2110 ms
+2025-11-28 00:03:31.159 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/services - 204 null null 32.2818ms
+2025-11-28 00:03:31.163 +03:00 [INF] Request starting HTTP/2 POST https://localhost:7291/api/doctor/services - application/json 177
+2025-11-28 00:03:31.177 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:03:31.181 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.CreateService (EvdeSaglik.Controllers)'
+2025-11-28 00:03:31.184 +03:00 [INF] Route matched with {action = "CreateService", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[EvdeSaglik.Service.DTOs.Service.ServiceDetailDto]]] CreateService(EvdeSaglik.Service.DTOs.Doctor.CreateDoctorServiceDto) on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:03:31.211 +03:00 [INF] Executed DbCommand (19ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:03:31.234 +03:00 [INF] Executed DbCommand (15ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (Precision = 18) (Scale = 2) (DbType = Decimal), @p2='?' (DbType = DateTime2), @p3='?' (Size = 1000), @p4='?' (DbType = Guid), @p5='?' (DbType = Int32), @p6='?' (DbType = Boolean), @p7='?' (Size = 200), @p8='?' (DbType = Int32), @p9='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Services] ([Id], [BasePrice], [CreatedAt], [Description], [DoctorId], [DurationMinutes], [IsActive], [Name], [Specialization], [UpdatedAt])
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9);
+2025-11-28 00:03:31.257 +03:00 [INF] Executed DbCommand (14ms) [Parameters=[@__id_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Services] AS [s]
+INNER JOIN [Doctors] AS [d] ON [s].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [s].[Id] = @__id_0
+2025-11-28 00:03:31.265 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[EvdeSaglik.Service.DTOs.Service.ServiceDetailDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-11-28 00:03:31.269 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.CreateService (EvdeSaglik.Controllers) in 79.0329ms
+2025-11-28 00:03:31.276 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.CreateService (EvdeSaglik.Controllers)'
+2025-11-28 00:03:31.279 +03:00 [INF] HTTP POST /api/doctor/services responded 200 in 101.2686 ms
+2025-11-28 00:03:31.286 +03:00 [INF] Request finished HTTP/2 POST https://localhost:7291/api/doctor/services - 200 null application/json; charset=utf-8 123.9536ms
+2025-11-28 00:03:32.601 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - null null
+2025-11-28 00:03:32.621 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:03:32.624 +03:00 [INF] HTTP OPTIONS /api/doctor/appointments responded 204 in 3.3726 ms
+2025-11-28 00:03:32.632 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - 204 null null 36.5294ms
+2025-11-28 00:03:32.639 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/appointments - application/json null
+2025-11-28 00:03:32.651 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:03:32.653 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:03:32.659 +03:00 [INF] Route matched with {action = "GetMyAppointments", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto]]]] GetMyAppointments() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:03:32.688 +03:00 [INF] Executed DbCommand (20ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:03:32.729 +03:00 [INF] Executed DbCommand (33ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[CreatedAt], [a].[DoctorId], [a].[DoctorNotes], [a].[DurationMinutes], [a].[PatientId], [a].[PatientNotes], [a].[ScheduledDateTime], [a].[ServiceId], [a].[Status], [a].[TotalAmount], [a].[UpdatedAt], [p].[Id], [p].[Address], [p].[CreatedAt], [p].[DateOfBirth], [p].[EmergencyContact], [p].[MedicalHistory], [p].[UpdatedAt], [p].[UserId], [a0].[Id], [a0].[AccessFailedCount], [a0].[ConcurrencyStamp], [a0].[CreatedAt], [a0].[Email], [a0].[EmailConfirmed], [a0].[FirstName], [a0].[IsActive], [a0].[LastName], [a0].[LockoutEnabled], [a0].[LockoutEnd], [a0].[NormalizedEmail], [a0].[NormalizedUserName], [a0].[PasswordHash], [a0].[PhoneNumber], [a0].[PhoneNumberConfirmed], [a0].[SecurityStamp], [a0].[TwoFactorEnabled], [a0].[UpdatedAt], [a0].[UserName], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a1].[Id], [a1].[AccessFailedCount], [a1].[ConcurrencyStamp], [a1].[CreatedAt], [a1].[Email], [a1].[EmailConfirmed], [a1].[FirstName], [a1].[IsActive], [a1].[LastName], [a1].[LockoutEnabled], [a1].[LockoutEnd], [a1].[NormalizedEmail], [a1].[NormalizedUserName], [a1].[PasswordHash], [a1].[PhoneNumber], [a1].[PhoneNumberConfirmed], [a1].[SecurityStamp], [a1].[TwoFactorEnabled], [a1].[UpdatedAt], [a1].[UserName], [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[Id]
+INNER JOIN [AspNetUsers] AS [a0] ON [p].[UserId] = [a0].[Id]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a1] ON [d].[UserId] = [a1].[Id]
+INNER JOIN [Services] AS [s] ON [a].[ServiceId] = [s].[Id]
+WHERE [a].[DoctorId] = @__doctorId_0
+ORDER BY [a].[ScheduledDateTime] DESC
+2025-11-28 00:03:32.740 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:03:32.744 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers) in 77.2461ms
+2025-11-28 00:03:32.750 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:03:32.753 +03:00 [INF] HTTP GET /api/doctor/appointments responded 200 in 102.5262 ms
+2025-11-28 00:03:32.760 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/appointments - 200 null application/json; charset=utf-8 123.3142ms
+2025-11-28 00:03:33.755 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/services - application/json null
+2025-11-28 00:03:33.766 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:03:33.768 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers)'
+2025-11-28 00:03:33.771 +03:00 [INF] Route matched with {action = "GetMyServices", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Service.ServiceListDto]]]] GetMyServices() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:03:33.798 +03:00 [INF] Executed DbCommand (20ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:03:33.815 +03:00 [INF] Executed DbCommand (10ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Services] AS [s]
+INNER JOIN [Doctors] AS [d] ON [s].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [s].[DoctorId] = @__doctorId_0
+ORDER BY [s].[CreatedAt] DESC
+2025-11-28 00:03:33.821 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Service.ServiceListDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:03:33.825 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers) in 48.6401ms
+2025-11-28 00:03:33.829 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers)'
+2025-11-28 00:03:33.832 +03:00 [INF] HTTP GET /api/doctor/services responded 200 in 66.8367 ms
+2025-11-28 00:03:33.838 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/services - 200 null application/json; charset=utf-8 82.4168ms
+2025-11-28 00:03:42.766 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - null null
+2025-11-28 00:03:42.775 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:03:42.777 +03:00 [INF] HTTP OPTIONS /api/doctor/appointments responded 204 in 2.1281 ms
+2025-11-28 00:03:42.782 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - 204 null null 16.8401ms
+2025-11-28 00:03:42.793 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/appointments - application/json null
+2025-11-28 00:03:42.801 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:03:42.803 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:03:42.807 +03:00 [INF] Route matched with {action = "GetMyAppointments", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto]]]] GetMyAppointments() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:03:42.825 +03:00 [INF] Executed DbCommand (12ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:03:42.867 +03:00 [INF] Executed DbCommand (32ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[CreatedAt], [a].[DoctorId], [a].[DoctorNotes], [a].[DurationMinutes], [a].[PatientId], [a].[PatientNotes], [a].[ScheduledDateTime], [a].[ServiceId], [a].[Status], [a].[TotalAmount], [a].[UpdatedAt], [p].[Id], [p].[Address], [p].[CreatedAt], [p].[DateOfBirth], [p].[EmergencyContact], [p].[MedicalHistory], [p].[UpdatedAt], [p].[UserId], [a0].[Id], [a0].[AccessFailedCount], [a0].[ConcurrencyStamp], [a0].[CreatedAt], [a0].[Email], [a0].[EmailConfirmed], [a0].[FirstName], [a0].[IsActive], [a0].[LastName], [a0].[LockoutEnabled], [a0].[LockoutEnd], [a0].[NormalizedEmail], [a0].[NormalizedUserName], [a0].[PasswordHash], [a0].[PhoneNumber], [a0].[PhoneNumberConfirmed], [a0].[SecurityStamp], [a0].[TwoFactorEnabled], [a0].[UpdatedAt], [a0].[UserName], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a1].[Id], [a1].[AccessFailedCount], [a1].[ConcurrencyStamp], [a1].[CreatedAt], [a1].[Email], [a1].[EmailConfirmed], [a1].[FirstName], [a1].[IsActive], [a1].[LastName], [a1].[LockoutEnabled], [a1].[LockoutEnd], [a1].[NormalizedEmail], [a1].[NormalizedUserName], [a1].[PasswordHash], [a1].[PhoneNumber], [a1].[PhoneNumberConfirmed], [a1].[SecurityStamp], [a1].[TwoFactorEnabled], [a1].[UpdatedAt], [a1].[UserName], [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[Id]
+INNER JOIN [AspNetUsers] AS [a0] ON [p].[UserId] = [a0].[Id]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a1] ON [d].[UserId] = [a1].[Id]
+INNER JOIN [Services] AS [s] ON [a].[ServiceId] = [s].[Id]
+WHERE [a].[DoctorId] = @__doctorId_0
+ORDER BY [a].[ScheduledDateTime] DESC
+2025-11-28 00:03:42.875 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:03:42.879 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers) in 67.4967ms
+2025-11-28 00:03:42.885 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:03:42.889 +03:00 [INF] HTTP GET /api/doctor/appointments responded 200 in 88.7082 ms
+2025-11-28 00:03:42.894 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/appointments - 200 null application/json; charset=utf-8 102.0671ms
+2025-11-28 00:03:44.657 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/services - null null
+2025-11-28 00:03:44.668 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:03:44.671 +03:00 [INF] HTTP OPTIONS /api/doctor/services responded 204 in 3.0001 ms
+2025-11-28 00:03:44.677 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/services - 204 null null 20.7387ms
+2025-11-28 00:03:44.690 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/services - application/json null
+2025-11-28 00:03:44.700 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:03:44.703 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers)'
+2025-11-28 00:03:44.707 +03:00 [INF] Route matched with {action = "GetMyServices", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Service.ServiceListDto]]]] GetMyServices() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:03:44.723 +03:00 [INF] Executed DbCommand (10ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:03:44.741 +03:00 [INF] Executed DbCommand (10ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Services] AS [s]
+INNER JOIN [Doctors] AS [d] ON [s].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [s].[DoctorId] = @__doctorId_0
+ORDER BY [s].[CreatedAt] DESC
+2025-11-28 00:03:44.748 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Service.ServiceListDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:03:44.752 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers) in 40.6554ms
+2025-11-28 00:03:44.757 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers)'
+2025-11-28 00:03:44.760 +03:00 [INF] HTTP GET /api/doctor/services responded 200 in 59.5209 ms
+2025-11-28 00:03:44.766 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/services - 200 null application/json; charset=utf-8 75.3002ms
+2025-11-28 00:03:47.025 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/appointments - application/json null
+2025-11-28 00:03:47.036 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:03:47.041 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:03:47.046 +03:00 [INF] Route matched with {action = "GetMyAppointments", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto]]]] GetMyAppointments() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:03:47.062 +03:00 [INF] Executed DbCommand (9ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:03:47.097 +03:00 [INF] Executed DbCommand (27ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[CreatedAt], [a].[DoctorId], [a].[DoctorNotes], [a].[DurationMinutes], [a].[PatientId], [a].[PatientNotes], [a].[ScheduledDateTime], [a].[ServiceId], [a].[Status], [a].[TotalAmount], [a].[UpdatedAt], [p].[Id], [p].[Address], [p].[CreatedAt], [p].[DateOfBirth], [p].[EmergencyContact], [p].[MedicalHistory], [p].[UpdatedAt], [p].[UserId], [a0].[Id], [a0].[AccessFailedCount], [a0].[ConcurrencyStamp], [a0].[CreatedAt], [a0].[Email], [a0].[EmailConfirmed], [a0].[FirstName], [a0].[IsActive], [a0].[LastName], [a0].[LockoutEnabled], [a0].[LockoutEnd], [a0].[NormalizedEmail], [a0].[NormalizedUserName], [a0].[PasswordHash], [a0].[PhoneNumber], [a0].[PhoneNumberConfirmed], [a0].[SecurityStamp], [a0].[TwoFactorEnabled], [a0].[UpdatedAt], [a0].[UserName], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a1].[Id], [a1].[AccessFailedCount], [a1].[ConcurrencyStamp], [a1].[CreatedAt], [a1].[Email], [a1].[EmailConfirmed], [a1].[FirstName], [a1].[IsActive], [a1].[LastName], [a1].[LockoutEnabled], [a1].[LockoutEnd], [a1].[NormalizedEmail], [a1].[NormalizedUserName], [a1].[PasswordHash], [a1].[PhoneNumber], [a1].[PhoneNumberConfirmed], [a1].[SecurityStamp], [a1].[TwoFactorEnabled], [a1].[UpdatedAt], [a1].[UserName], [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[Id]
+INNER JOIN [AspNetUsers] AS [a0] ON [p].[UserId] = [a0].[Id]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a1] ON [d].[UserId] = [a1].[Id]
+INNER JOIN [Services] AS [s] ON [a].[ServiceId] = [s].[Id]
+WHERE [a].[DoctorId] = @__doctorId_0
+ORDER BY [a].[ScheduledDateTime] DESC
+2025-11-28 00:03:47.105 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:03:47.109 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers) in 57.4543ms
+2025-11-28 00:03:47.113 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:03:47.116 +03:00 [INF] HTTP GET /api/doctor/appointments responded 200 in 79.4390 ms
+2025-11-28 00:03:47.122 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/appointments - 200 null application/json; charset=utf-8 97.1376ms
+2025-11-28 00:03:50.838 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - null null
+2025-11-28 00:03:50.847 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:03:50.849 +03:00 [INF] HTTP OPTIONS /api/doctor/appointments responded 204 in 2.4145 ms
+2025-11-28 00:03:50.855 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - 204 null null 16.2564ms
+2025-11-28 00:03:50.891 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/appointments - application/json null
+2025-11-28 00:03:50.900 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:03:50.903 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:03:50.906 +03:00 [INF] Route matched with {action = "GetMyAppointments", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto]]]] GetMyAppointments() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:03:50.921 +03:00 [INF] Executed DbCommand (9ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:03:50.953 +03:00 [INF] Executed DbCommand (25ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[CreatedAt], [a].[DoctorId], [a].[DoctorNotes], [a].[DurationMinutes], [a].[PatientId], [a].[PatientNotes], [a].[ScheduledDateTime], [a].[ServiceId], [a].[Status], [a].[TotalAmount], [a].[UpdatedAt], [p].[Id], [p].[Address], [p].[CreatedAt], [p].[DateOfBirth], [p].[EmergencyContact], [p].[MedicalHistory], [p].[UpdatedAt], [p].[UserId], [a0].[Id], [a0].[AccessFailedCount], [a0].[ConcurrencyStamp], [a0].[CreatedAt], [a0].[Email], [a0].[EmailConfirmed], [a0].[FirstName], [a0].[IsActive], [a0].[LastName], [a0].[LockoutEnabled], [a0].[LockoutEnd], [a0].[NormalizedEmail], [a0].[NormalizedUserName], [a0].[PasswordHash], [a0].[PhoneNumber], [a0].[PhoneNumberConfirmed], [a0].[SecurityStamp], [a0].[TwoFactorEnabled], [a0].[UpdatedAt], [a0].[UserName], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a1].[Id], [a1].[AccessFailedCount], [a1].[ConcurrencyStamp], [a1].[CreatedAt], [a1].[Email], [a1].[EmailConfirmed], [a1].[FirstName], [a1].[IsActive], [a1].[LastName], [a1].[LockoutEnabled], [a1].[LockoutEnd], [a1].[NormalizedEmail], [a1].[NormalizedUserName], [a1].[PasswordHash], [a1].[PhoneNumber], [a1].[PhoneNumberConfirmed], [a1].[SecurityStamp], [a1].[TwoFactorEnabled], [a1].[UpdatedAt], [a1].[UserName], [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[Id]
+INNER JOIN [AspNetUsers] AS [a0] ON [p].[UserId] = [a0].[Id]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a1] ON [d].[UserId] = [a1].[Id]
+INNER JOIN [Services] AS [s] ON [a].[ServiceId] = [s].[Id]
+WHERE [a].[DoctorId] = @__doctorId_0
+ORDER BY [a].[ScheduledDateTime] DESC
+2025-11-28 00:03:50.960 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:03:50.965 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers) in 53.7171ms
+2025-11-28 00:03:50.969 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:03:50.972 +03:00 [INF] HTTP GET /api/doctor/appointments responded 200 in 72.0774 ms
+2025-11-28 00:03:50.976 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/appointments - 200 null application/json; charset=utf-8 85.4479ms
+2025-11-28 00:03:52.931 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/services - null null
+2025-11-28 00:03:52.938 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:03:52.941 +03:00 [INF] HTTP OPTIONS /api/doctor/services responded 204 in 2.1973 ms
+2025-11-28 00:03:52.945 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/services - 204 null null 15.1087ms
+2025-11-28 00:03:52.958 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/services - application/json null
+2025-11-28 00:03:52.966 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:03:52.968 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers)'
+2025-11-28 00:03:52.971 +03:00 [INF] Route matched with {action = "GetMyServices", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Service.ServiceListDto]]]] GetMyServices() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:03:53.186 +03:00 [INF] Executed DbCommand (208ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:03:53.204 +03:00 [INF] Executed DbCommand (11ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Services] AS [s]
+INNER JOIN [Doctors] AS [d] ON [s].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [s].[DoctorId] = @__doctorId_0
+ORDER BY [s].[CreatedAt] DESC
+2025-11-28 00:03:53.211 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Service.ServiceListDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:03:53.216 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers) in 239.0307ms
+2025-11-28 00:03:53.219 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers)'
+2025-11-28 00:03:53.223 +03:00 [INF] HTTP GET /api/doctor/services responded 200 in 256.9698 ms
+2025-11-28 00:03:53.227 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/services - 200 null application/json; charset=utf-8 269.7301ms
+2025-11-28 00:05:06.288 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/services - null null
+2025-11-28 00:05:06.307 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:05:06.309 +03:00 [INF] HTTP OPTIONS /api/doctor/services responded 204 in 2.4909 ms
+2025-11-28 00:05:06.315 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/services - 204 null null 28.102ms
+2025-11-28 00:05:06.329 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/services - application/json null
+2025-11-28 00:05:06.337 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:05:06.340 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers)'
+2025-11-28 00:05:06.345 +03:00 [INF] Route matched with {action = "GetMyServices", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Service.ServiceListDto]]]] GetMyServices() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:05:06.370 +03:00 [INF] Executed DbCommand (17ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:05:06.387 +03:00 [INF] Executed DbCommand (11ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Services] AS [s]
+INNER JOIN [Doctors] AS [d] ON [s].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [s].[DoctorId] = @__doctorId_0
+ORDER BY [s].[CreatedAt] DESC
+2025-11-28 00:05:06.394 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Service.ServiceListDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:05:06.398 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers) in 46.5017ms
+2025-11-28 00:05:06.402 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyServices (EvdeSaglik.Controllers)'
+2025-11-28 00:05:06.405 +03:00 [INF] HTTP GET /api/doctor/services responded 200 in 67.6758 ms
+2025-11-28 00:05:06.412 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/services - 200 null application/json; charset=utf-8 83.9007ms
+2025-11-28 00:05:29.880 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - null null
+2025-11-28 00:05:29.896 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:05:29.898 +03:00 [INF] HTTP OPTIONS /api/doctor/appointments responded 204 in 2.7053 ms
+2025-11-28 00:05:29.905 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - 204 null null 24.6637ms
+2025-11-28 00:05:29.935 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/appointments - application/json null
+2025-11-28 00:05:29.943 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:05:29.945 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:05:29.948 +03:00 [INF] Route matched with {action = "GetMyAppointments", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto]]]] GetMyAppointments() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:05:29.958 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:05:29.991 +03:00 [INF] Executed DbCommand (26ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[CreatedAt], [a].[DoctorId], [a].[DoctorNotes], [a].[DurationMinutes], [a].[PatientId], [a].[PatientNotes], [a].[ScheduledDateTime], [a].[ServiceId], [a].[Status], [a].[TotalAmount], [a].[UpdatedAt], [p].[Id], [p].[Address], [p].[CreatedAt], [p].[DateOfBirth], [p].[EmergencyContact], [p].[MedicalHistory], [p].[UpdatedAt], [p].[UserId], [a0].[Id], [a0].[AccessFailedCount], [a0].[ConcurrencyStamp], [a0].[CreatedAt], [a0].[Email], [a0].[EmailConfirmed], [a0].[FirstName], [a0].[IsActive], [a0].[LastName], [a0].[LockoutEnabled], [a0].[LockoutEnd], [a0].[NormalizedEmail], [a0].[NormalizedUserName], [a0].[PasswordHash], [a0].[PhoneNumber], [a0].[PhoneNumberConfirmed], [a0].[SecurityStamp], [a0].[TwoFactorEnabled], [a0].[UpdatedAt], [a0].[UserName], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a1].[Id], [a1].[AccessFailedCount], [a1].[ConcurrencyStamp], [a1].[CreatedAt], [a1].[Email], [a1].[EmailConfirmed], [a1].[FirstName], [a1].[IsActive], [a1].[LastName], [a1].[LockoutEnabled], [a1].[LockoutEnd], [a1].[NormalizedEmail], [a1].[NormalizedUserName], [a1].[PasswordHash], [a1].[PhoneNumber], [a1].[PhoneNumberConfirmed], [a1].[SecurityStamp], [a1].[TwoFactorEnabled], [a1].[UpdatedAt], [a1].[UserName], [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[Id]
+INNER JOIN [AspNetUsers] AS [a0] ON [p].[UserId] = [a0].[Id]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a1] ON [d].[UserId] = [a1].[Id]
+INNER JOIN [Services] AS [s] ON [a].[ServiceId] = [s].[Id]
+WHERE [a].[DoctorId] = @__doctorId_0
+ORDER BY [a].[ScheduledDateTime] DESC
+2025-11-28 00:05:29.998 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:05:30.003 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers) in 49.4007ms
+2025-11-28 00:05:30.006 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:05:30.009 +03:00 [INF] HTTP GET /api/doctor/appointments responded 200 in 66.7316 ms
+2025-11-28 00:05:30.027 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/appointments - 200 null application/json; charset=utf-8 93.6435ms
+2025-11-28 00:05:35.506 +03:00 [INF] Request starting HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - null null
+2025-11-28 00:05:35.514 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:05:35.516 +03:00 [INF] HTTP OPTIONS /api/doctor/appointments responded 204 in 1.9475 ms
+2025-11-28 00:05:35.521 +03:00 [INF] Request finished HTTP/2 OPTIONS https://localhost:7291/api/doctor/appointments - 204 null null 14.5834ms
+2025-11-28 00:05:35.526 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7291/api/doctor/appointments - application/json null
+2025-11-28 00:05:35.537 +03:00 [INF] CORS policy execution successful.
+2025-11-28 00:05:35.540 +03:00 [INF] Executing endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:05:35.543 +03:00 [INF] Route matched with {action = "GetMyAppointments", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult`1[EvdeSaglik.Service.DTOs.Common.ApiResponse`1[System.Collections.Generic.List`1[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto]]]] GetMyAppointments() on controller EvdeSaglik.Controllers.Controllers.DoctorController (EvdeSaglik.Controllers).
+2025-11-28 00:05:35.553 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAt], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[IsActive], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAt], [a].[UserName]
+FROM [Doctors] AS [d]
+INNER JOIN [AspNetUsers] AS [a] ON [d].[UserId] = [a].[Id]
+WHERE [d].[UserId] = @__userId_0
+2025-11-28 00:05:35.563 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[@__doctorId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[CreatedAt], [a].[DoctorId], [a].[DoctorNotes], [a].[DurationMinutes], [a].[PatientId], [a].[PatientNotes], [a].[ScheduledDateTime], [a].[ServiceId], [a].[Status], [a].[TotalAmount], [a].[UpdatedAt], [p].[Id], [p].[Address], [p].[CreatedAt], [p].[DateOfBirth], [p].[EmergencyContact], [p].[MedicalHistory], [p].[UpdatedAt], [p].[UserId], [a0].[Id], [a0].[AccessFailedCount], [a0].[ConcurrencyStamp], [a0].[CreatedAt], [a0].[Email], [a0].[EmailConfirmed], [a0].[FirstName], [a0].[IsActive], [a0].[LastName], [a0].[LockoutEnabled], [a0].[LockoutEnd], [a0].[NormalizedEmail], [a0].[NormalizedUserName], [a0].[PasswordHash], [a0].[PhoneNumber], [a0].[PhoneNumberConfirmed], [a0].[SecurityStamp], [a0].[TwoFactorEnabled], [a0].[UpdatedAt], [a0].[UserName], [d].[Id], [d].[ApprovedAt], [d].[ApprovedBy], [d].[Bio], [d].[CreatedAt], [d].[HourlyRate], [d].[IsApproved], [d].[LicenseNumber], [d].[Specialization], [d].[UpdatedAt], [d].[UserId], [d].[YearsOfExperience], [a1].[Id], [a1].[AccessFailedCount], [a1].[ConcurrencyStamp], [a1].[CreatedAt], [a1].[Email], [a1].[EmailConfirmed], [a1].[FirstName], [a1].[IsActive], [a1].[LastName], [a1].[LockoutEnabled], [a1].[LockoutEnd], [a1].[NormalizedEmail], [a1].[NormalizedUserName], [a1].[PasswordHash], [a1].[PhoneNumber], [a1].[PhoneNumberConfirmed], [a1].[SecurityStamp], [a1].[TwoFactorEnabled], [a1].[UpdatedAt], [a1].[UserName], [s].[Id], [s].[BasePrice], [s].[CreatedAt], [s].[Description], [s].[DoctorId], [s].[DurationMinutes], [s].[IsActive], [s].[Name], [s].[Specialization], [s].[UpdatedAt]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[Id]
+INNER JOIN [AspNetUsers] AS [a0] ON [p].[UserId] = [a0].[Id]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[Id]
+INNER JOIN [AspNetUsers] AS [a1] ON [d].[UserId] = [a1].[Id]
+INNER JOIN [Services] AS [s] ON [a].[ServiceId] = [s].[Id]
+WHERE [a].[DoctorId] = @__doctorId_0
+ORDER BY [a].[ScheduledDateTime] DESC
+2025-11-28 00:05:35.570 +03:00 [INF] Executing OkObjectResult, writing value of type 'EvdeSaglik.Service.DTOs.Common.ApiResponse`1[[System.Collections.Generic.List`1[[EvdeSaglik.Service.DTOs.Appointment.DoctorAppointmentDto, EvdeSaglik.Service, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2025-11-28 00:05:35.574 +03:00 [INF] Executed action EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers) in 25.6655ms
+2025-11-28 00:05:35.577 +03:00 [INF] Executed endpoint 'EvdeSaglik.Controllers.Controllers.DoctorController.GetMyAppointments (EvdeSaglik.Controllers)'
+2025-11-28 00:05:35.580 +03:00 [INF] HTTP GET /api/doctor/appointments responded 200 in 42.9519 ms
+2025-11-28 00:05:35.585 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7291/api/doctor/appointments - 200 null application/json; charset=utf-8 59.742ms

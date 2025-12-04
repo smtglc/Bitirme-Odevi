@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap - Evde Sağlık</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body>
+    <div class="split-screen-container">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <div class="template-logo">
+                Evde Sağlık
+            </div>
+
+            <div class="left-content">
+                <div class="branding-text">
+                    <h1>Sağlık Evinizde</h1>
+                    <p>Evinizin sıcaklığında profesyonel bakım.</p>
+                </div>
+            </div>
+
+            <div class="social-links">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="auth-box">
+                <div class="right-panel-logo">
+                    Evde Sağlık
+                </div>
+
+                <div class="social-login">
+                    <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-btn"><i class="fab fa-google"></i></a>
+                    <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+
+                <div class="auth-header">
+                    <p class="auth-subtitle">veya e-posta hesabınızı kullanın</p>
+                </div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label>E-posta</label>
+                        <input type="email" id="email" class="form-input" required placeholder="Email">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Şifre</label>
+                        <input type="password" id="password" class="form-input" required placeholder="Password">
+                    </div>
+
+                    <div style="text-align: right; margin-bottom: 1.5rem;">
+                        <a href="#" style="color: #888; text-decoration: none; font-size: 0.85rem;">Şifrenizi mi
+                            unuttunuz?</a>
+                    </div>
+
+                    <button type="submit" class="btn-primary">GİRİŞ YAP</button>
+                </form>
+
+                <div class="auth-links">
+                    Hesabınız yok mu? <a href="register.html">Kayıt Ol</a>
+                    <br><br>
+                    <a href="index.html">← Ana Sayfaya Dön</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const form = document.getElementById('loginForm');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await api.auth.login({ email, password });
+
+                if (response.success) {
+                    // Show simple alert for now, can be replaced with custom toast if needed
+                    alert('Giriş başarılı! Yönlendiriliyorsunuz...');
+
+                    const role = api.getUserRole();
+                    setTimeout(() => {
+                        if (role === 'Doctor') {
+                            window.location.href = 'doctor/dashboard.html';
+                        } else if (role === 'Patient') {
+                            window.location.href = 'patient/dashboard.html';
+                        }
+                    }, 1000);
+                } else {
+                    alert(response.message || 'Giriş başarısız!');
+                }
+            } catch (error) {
+                alert('Giriş yapılırken bir hata oluştu!');
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evde Sağlık - Hoş Geldiniz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body>
+    <div class="split-screen-container">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <div class="template-logo">
+                Evde Sağlık
+            </div>
+
+            <div class="left-content">
+                <div class="branding-text">
+                    <h1>Sağlık Evinizde</h1>
+                    <p>Evinizin sıcaklığında profesyonel bakım.</p>
+                </div>
+            </div>
+
+            <div class="social-links">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="auth-box">
+                <div class="right-panel-logo">
+                    Evde Sağlık
+                </div>
+
+                <div class="auth-header">
+                    <h2 class="auth-title">Hoş Geldiniz</h2>
+                    <p class="auth-subtitle">Lütfen devam etmek için bir seçenek belirleyin</p>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <button onclick="window.location.href='login.html'" class="btn-primary">GİRİŞ YAP</button>
+
+                    <div style="text-align: center; margin: 1rem 0; color: #666; position: relative;">
+                        <span style="background: #121212; padding: 0 10px; position: relative; z-index: 1;">veya</span>
+                        <div
+                            style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #333; z-index: 0;">
+                        </div>
+                    </div>
+
+                    <button onclick="window.location.href='register.html?role=patient'" class="btn-primary"
+                        style="background-color: transparent; border: 1px solid #00d2d3; color: #00d2d3;">HASTA
+                        KAYDI</button>
+                    <button onclick="window.location.href='register.html?role=doctor'" class="btn-primary"
+                        style="background-color: transparent; border: 1px solid #00d2d3; color: #00d2d3;">DOKTOR
+                        KAYDI</button>
+                </div>
+
+                <div class="auth-links" style="margin-top: 3rem;">
+                    &copy; 2025 Evde Sağlık Hizmetleri
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

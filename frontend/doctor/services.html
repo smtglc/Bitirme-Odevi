@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hizmetlerim - Evde Sağlık</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/services.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div class="user-info">
+                        <h3 id="sidebarUserName">Dr. ...</h3>
+                        <p>Doktor</p>
+                    </div>
+                </div>
+                <button onclick="window.location.href='profile.html'" class="btn btn-primary btn-block btn-sm">
+                    <i class="fas fa-user"></i> Profilim
+                </button>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="menu-item">
+                    <a href="dashboard.html" class="menu-link">
+                        <i class="fas fa-home"></i> Ana Ekran
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="inbox.html" class="menu-link">
+                        <i class="fas fa-inbox"></i> Gelen Kutusu
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="appointments.html" class="menu-link">
+                        <i class="fas fa-calendar-check"></i> Randevularım
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="services.html" class="menu-link active">
+                        <i class="fas fa-stethoscope"></i> Hizmetlerim
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="documents.html" class="menu-link">
+                        <i class="fas fa-folder-open"></i> Belgelerim
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <button onclick="openCreateServiceModal()" class="btn btn-primary btn-block btn-sm"
+                        style="margin: 0.5rem 1.5rem;">
+                        <i class="fas fa-plus"></i> Hizmet Oluştur
+                    </button>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="#" class="menu-link" onclick="api.auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1><i class="fas fa-stethoscope"></i> Hizmetlerim</h1>
+            </div>
+
+            <!-- Services Grid -->
+            <div id="servicesGrid" class="services-grid">
+                <!-- Services will be loaded here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-stethoscope"></i>
+                <h3>Henüz Hizmet Yok</h3>
+                <p>Yeni hizmet eklemek için "Hizmet Oluştur" butonuna tıklayın</p>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="spinner" style="display: none;"></div>
+        </main>
+    </div>
+
+    <!-- Create Service Modal -->
+    <div id="createServiceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Yeni Hizmet Oluştur</h2>
+                <button class="modal-close" onclick="closeCreateServiceModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="createServiceForm" onsubmit="handleCreateService(event)">
+                <div class="form-group">
+                    <label for="serviceName">Hizmet Adı *</label>
+                    <input type="text" id="serviceName" name="name" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="serviceDescription">Açıklama *</label>
+                    <textarea id="serviceDescription" name="description" required class="form-control"
+                        rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="servicePrice">Fiyat (₺) *</label>
+                        <input type="number" id="servicePrice" name="basePrice" required class="form-control" min="0"
+                            step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceDuration">Süre (Dakika) *</label>
+                        <input type="number" id="serviceDuration" name="durationMinutes" required class="form-control"
+                            min="15" step="15">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="serviceSpecialization">Uzmanlık Alanı *</label>
+                    <select id="serviceSpecialization" name="specialization" required class="form-control">
+                        <option value="">Seçiniz...</option>
+                        <option value="GeneralMedicine">Genel Tıp</option>
+                        <option value="Cardiology">Kardiyoloji</option>
+                        <option value="Neurology">Nöroloji</option>
+                        <option value="Orthopedics">Ortopedi</option>
+                        <option value="GeneralSurgery">Genel Cerrahi</option>
+                        <option value="PhysicalTherapy">Fizik Tedavi</option>
+                        <option value="NursingServices">Hemşirelik Hizmetleri</option>
+                        <option value="LaboratoryServices">Laboratuvar Hizmetleri</option>
+                        <option value="Dermatology">Dermatoloji</option>
+                        <option value="Pediatrics">Pediatri</option>
+                        <option value="Gynecology">Jinekoloji</option>
+                        <option value="Psychiatry">Psikiyatri</option>
+                        <option value="Other">Diğer</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeCreateServiceModal()">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Service Modal -->
+    <div id="editServiceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Hizmet Düzenle</h2>
+                <button class="modal-close" onclick="closeEditServiceModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editServiceForm" onsubmit="handleEditService(event)">
+                <input type="hidden" id="editServiceId" name="id">
+                <div class="form-group">
+                    <label for="editServiceName">Hizmet Adı *</label>
+                    <input type="text" id="editServiceName" name="name" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="editServiceDescription">Açıklama *</label>
+                    <textarea id="editServiceDescription" name="description" required class="form-control"
+                        rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editServicePrice">Fiyat (₺) *</label>
+                        <input type="number" id="editServicePrice" name="basePrice" required class="form-control"
+                            min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editServiceDuration">Süre (Dakika) *</label>
+                        <input type="number" id="editServiceDuration" name="durationMinutes" required
+                            class="form-control" min="15" step="15">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="editServiceSpecialization">Uzmanlık Alanı *</label>
+                    <select id="editServiceSpecialization" name="specialization" required class="form-control">
+                        <option value="">Seçiniz...</option>
+                        <option value="GeneralMedicine">Genel Tıp</option>
+                        <option value="Cardiology">Kardiyoloji</option>
+                        <option value="Neurology">Nöroloji</option>
+                        <option value="Orthopedics">Ortopedi</option>
+                        <option value="GeneralSurgery">Genel Cerrahi</option>
+                        <option value="PhysicalTherapy">Fizik Tedavi</option>
+                        <option value="NursingServices">Hemşirelik Hizmetleri</option>
+                        <option value="LaboratoryServices">Laboratuvar Hizmetleri</option>
+                        <option value="Dermatology">Dermatoloji</option>
+                        <option value="Pediatrics">Pediatri</option>
+                        <option value="Gynecology">Jinekoloji</option>
+                        <option value="Psychiatry">Psikiyatri</option>
+                        <option value="Other">Diğer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="editServiceIsActive" name="isActive" checked>
+                        <span>Hizmet Aktif</span>
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditServiceModal()">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Güncelle
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script>
+        if (!requireAuth(['Doctor'])) {
+            window.location.href = '../index.html';
+        }
+
+        let services = [];
+
+        async function loadServices() {
+            try {
+                const user = api.getUser();
+                document.getElementById('sidebarUserName').textContent = `Dr. ${user.firstName} ${user.lastName}`;
+
+                document.getElementById('loadingSpinner').style.display = 'block';
+                const response = await api.doctor.getServices();
+                services = response.data || [];
+
+                renderServices();
+            } catch (error) {
+                console.error('Services load error:', error);
+                showToast('Hizmetler yüklenirken hata oluştu', 'error');
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+
+        function renderServices() {
+            const grid = document.getElementById('servicesGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (services.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            emptyState.style.display = 'none';
+            grid.innerHTML = '';
+
+            services.forEach(service => {
+                const card = createServiceCard(service);
+                grid.appendChild(card);
+            });
+        }
+
+        function createServiceCard(service) {
+            const card = document.createElement('div');
+            card.className = 'service-card';
+
+            const specializationMap = {
+                'GeneralMedicine': 'Genel Tıp',
+                'Cardiology': 'Kardiyoloji',
+                'Neurology': 'Nöroloji',
+                'Orthopedics': 'Ortopedi',
+                'GeneralSurgery': 'Genel Cerrahi',
+                'PhysicalTherapy': 'Fizik Tedavi',
+                'NursingServices': 'Hemşirelik Hizmetleri',
+                'LaboratoryServices': 'Laboratuvar Hizmetleri',
+                'Dermatology': 'Dermatoloji',
+                'Pediatrics': 'Pediatri',
+                'Gynecology': 'Jinekoloji',
+                'Psychiatry': 'Psikiyatri',
+                'Other': 'Diğer'
+            };
+
+            card.innerHTML = `
+                <div class="service-header">
+                    <div>
+                        <h3 class="service-title">${service.name}</h3>
+                    </div>
+                    <span class="service-specialization">
+                        <i class="fas fa-stethoscope"></i>
+                        ${specializationMap[service.specialization] || service.specialization}
+                    </span>
+                </div>
+
+                <p class="service-description">${service.description}</p>
+
+                <div class="service-details">
+                    <div class="detail-item">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <div class="detail-content">
+                            <div class="detail-label">Fiyat</div>
+                            <div class="detail-value">${formatCurrency(service.basePrice)}</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-clock"></i>
+                        <div class="detail-content">
+                            <div class="detail-label">Süre</div>
+                            <div class="detail-value">${service.durationMinutes} dakika</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-actions">
+                    <button class="action-btn btn-edit" onclick='editService(${JSON.stringify(service)})'>
+                        <i class="fas fa-edit"></i> Düzenle
+                    </button>
+                    <button class="action-btn btn-delete" onclick="deleteService('${service.id}')">
+                        <i class="fas fa-trash"></i> Sil
+                    </button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Create Service Modal Functions
+        function openCreateServiceModal() {
+            document.getElementById('createServiceModal').style.display = 'flex';
+        }
+
+        function closeCreateServiceModal() {
+            document.getElementById('createServiceModal').style.display = 'none';
+            document.getElementById('createServiceForm').reset();
+        }
+
+        async function handleCreateService(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const serviceData = {
+                name: formData.get('name'),
+                description: formData.get('description'),
+                basePrice: parseFloat(formData.get('basePrice')),
+                durationMinutes: parseInt(formData.get('durationMinutes')),
+                specialization: formData.get('specialization')
+            };
+
+            try {
+                document.getElementById('loadingSpinner').style.display = 'block';
+                const response = await api.doctor.createService(serviceData);
+                if (response.success) {
+                    showToast('Hizmet başarıyla oluşturuldu!', 'success');
+                    closeCreateServiceModal();
+                    await loadServices();
+                } else {
+                    showToast(response.message || 'Hizmet oluşturulamadı', 'error');
+                }
+            } catch (error) {
+                console.error('Service creation error:', error);
+                showToast('Bir hata oluştu: ' + error.message, 'error');
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+
+        // Edit Service Modal Functions
+        function editService(service) {
+            // Populate form with service data
+            document.getElementById('editServiceId').value = service.id;
+            document.getElementById('editServiceName').value = service.name;
+            document.getElementById('editServiceDescription').value = service.description;
+            document.getElementById('editServicePrice').value = service.basePrice;
+            document.getElementById('editServiceDuration').value = service.durationMinutes;
+            document.getElementById('editServiceSpecialization').value = service.specialization;
+            document.getElementById('editServiceIsActive').checked = true; // Default to active
+
+            // Open modal
+            document.getElementById('editServiceModal').style.display = 'flex';
+        }
+
+        function closeEditServiceModal() {
+            document.getElementById('editServiceModal').style.display = 'none';
+            document.getElementById('editServiceForm').reset();
+        }
+
+        async function handleEditService(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const serviceId = formData.get('id');
+            const serviceData = {
+                name: formData.get('name'),
+                description: formData.get('description'),
+                basePrice: parseFloat(formData.get('basePrice')),
+                durationMinutes: parseInt(formData.get('durationMinutes')),
+                specialization: formData.get('specialization'),
+                isActive: document.getElementById('editServiceIsActive').checked
+            };
+
+            try {
+                document.getElementById('loadingSpinner').style.display = 'block';
+                const response = await api.doctor.updateService(serviceId, serviceData);
+                if (response.success) {
+                    showToast('Hizmet başarıyla güncellendi!', 'success');
+                    closeEditServiceModal();
+                    await loadServices();
+                } else {
+                    showToast(response.message || 'Hizmet güncellenemedi', 'error');
+                }
+            } catch (error) {
+                console.error('Service update error:', error);
+                showToast('Bir hata oluştu: ' + error.message, 'error');
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+
+        // Delete Service Function
+        async function deleteService(id) {
+            if (!confirm('Bu hizmeti silmek istediğinizden emin misiniz?')) {
+                return;
+            }
+
+            try {
+                document.getElementById('loadingSpinner').style.display = 'block';
+                await api.doctor.deleteService(id);
+                showToast('Hizmet silindi', 'success');
+                await loadServices();
+            } catch (error) {
+                console.error('Delete error:', error);
+                showToast(error.message || 'Hizmet silinirken hata oluştu', 'error');
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+
+        // Modal backdrop click handlers
+        window.onclick = function (event) {
+            const createModal = document.getElementById('createServiceModal');
+            const editModal = document.getElementById('editServiceModal');
+
+            if (event.target === createModal) {
+                closeCreateServiceModal();
+            }
+            if (event.target === editModal) {
+                closeEditServiceModal();
+            }
+        }
+
+        // Load services on page load
+        loadServices();
+    </script>
+</body>
+
+</html>

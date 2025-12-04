@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hizmetler - Evde Sağlık</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">🏥 Evde Sağlık</div>
+            <ul class="navbar-menu">
+                <li><a href="dashboard.html" class="navbar-link">Dashboard</a></li>
+                <li><a href="services.html" class="navbar-link active">Hizmetler</a></li>
+                <li><a href="appointments.html" class="navbar-link">Randevularım</a></li>
+                <li><a href="profile.html" class="navbar-link">Profil</a></li>
+                <li><a href="#" class="navbar-link" onclick="api.auth.logout()">Çıkış</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="mb-3">Hizmetler 🔍</h1>
+
+        <!-- Filters -->
+        <div class="glass-card mb-3">
+            <h3 class="mb-2">Filtrele</h3>
+            <div class="grid grid-3 gap-2">
+                <div class="form-group">
+                    <label class="form-label">Uzmanlık</label>
+                    <select id="specializationFilter" class="form-select">
+                        <option value="">Tümü</option>
+                        <option value="GeneralMedicine">Genel Tıp</option>
+                        <option value="Cardiology">Kardiyoloji</option>
+                        <option value="Neurology">Nöroloji</option>
+                        <option value="Orthopedics">Ortopedi</option>
+                        <option value="PhysicalTherapy">Fizik Tedavi</option>
+                        <option value="NursingServices">Hemşirelik</option>
+                        <option value="LaboratoryServices">Laboratuvar</option>
+                        <option value="Dermatology">Dermatoloji</option>
+                        <option value="Pediatrics">Pediatri</option>
+                        <option value="Gynecology">Kadın Hastalıkları</option>
+                        <option value="Psychiatry">Psikiyatri</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Min Fiyat</label>
+                    <input type="number" id="minPrice" class="form-input" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Max Fiyat</label>
+                    <input type="number" id="maxPrice" class="form-input" placeholder="10000">
+                </div>
+            </div>
+            <button onclick="applyFilters()" class="btn btn-primary">Filtrele</button>
+        </div>
+
+        <!-- Services Grid -->
+        <div id="servicesContainer">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <!-- Appointment Modal -->
+    <div id="appointmentModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <h2 class="modal-title">Randevu Oluştur</h2>
+            </div>
+            <form id="appointmentForm">
+                <input type="hidden" id="selectedServiceId">
+                <div class="form-group">
+                    <label class="form-label">Hizmet</label>
+                    <input type="text" id="serviceName" class="form-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tarih ve Saat</label>
+                    <input type="datetime-local" id="scheduledDateTime" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notlar (Opsiyonel)</label>
+                    <textarea id="patientNotes" class="form-textarea"
+                        placeholder="Randevu ile ilgili notlarınız..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    Randevu Oluştur
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script>
+        if (!requireAuth(['Patient'])) {
+            window.location.href = '../index.html';
+        }
+
+        let allServices = [];
+
+        async function loadServices() {
+            try {
+                const response = await api.patient.getServices();
+                allServices = response.data || [];
+                displayServices(allServices);
+            } catch (error) {
+                console.error('Services load error:', error);
+                showToast('Hizmetler yüklenirken hata oluştu', 'error');
+            }
+        }
+
+        function displayServices(services) {
+            const container = document.getElementById('servicesContainer');
+
+            if (services.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Hizmet bulunamadı</p>';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="grid grid-3 gap-2">
+                    ${services.map(service => `
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">${service.name}</h3>
+                                <span class="badge badge-info">${service.specialization}</span>
+                            </div>
+                            <div class="card-body">
+                                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                    ${service.description}
+                                </p>
+                                <p style="margin-bottom: 0.5rem;">
+                                    👨‍⚕️ <strong>${service.doctorName}</strong>
+                                </p>
+                                <p style="margin-bottom: 0.5rem;">
+                                    ⏱️ ${service.durationMinutes} dakika
+                                </p>
+                                <p style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">
+                                    ${formatCurrency(service.basePrice)}
+                                </p>
+                            </div>
+                            <div class="card-footer">
+                                <button onclick="openAppointmentModal('${service.id}', '${service.name}')" 
+                                        class="btn btn-primary btn-sm" style="width: 100%;">
+                                    📅 Randevu Al
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        async function applyFilters() {
+            const specialization = document.getElementById('specializationFilter').value;
+            const minPrice = document.getElementById('minPrice').value;
+            const maxPrice = document.getElementById('maxPrice').value;
+
+            const filter = {};
+            if (specialization) filter.specialization = specialization;
+            if (minPrice) filter.minPrice = minPrice;
+            if (maxPrice) filter.maxPrice = maxPrice;
+
+            try {
+                const response = await api.patient.getServices(filter);
+                displayServices(response.data || []);
+            } catch (error) {
+                console.error('Filter error:', error);
+                showToast('Filtreleme hatası', 'error');
+            }
+        }
+
+        function openAppointmentModal(serviceId, serviceName) {
+            document.getElementById('selectedServiceId').value = serviceId;
+            document.getElementById('serviceName').value = serviceName;
+            document.getElementById('appointmentModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('appointmentModal').classList.remove('active');
+        }
+
+        document.getElementById('appointmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const appointmentData = {
+                serviceId: document.getElementById('selectedServiceId').value,
+                scheduledDateTime: document.getElementById('scheduledDateTime').value,
+                patientNotes: document.getElementById('patientNotes').value
+            };
+
+            try {
+                const response = await api.patient.createAppointment(appointmentData);
+                if (response.success) {
+                    showToast('Randevu başarıyla oluşturuldu!', 'success');
+                    closeModal();
+                    setTimeout(() => {
+                        window.location.href = 'appointments.html';
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Appointment creation error:', error);
+                showToast('Randevu oluşturulamadı', 'error');
+            }
+        });
+
+        loadServices();
+    </script>
+</body>
+
+</html>

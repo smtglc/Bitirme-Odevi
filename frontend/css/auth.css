@@ -1,0 +1,297 @@
+/* Split Screen Layout */
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1a1a;
+    color: #fff;
+    overflow-x: hidden;
+}
+
+.split-screen-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* Left Panel - Image */
+.left-panel {
+    flex: 1;
+    background: url('../assets/images/split-bg.jpg') no-repeat center center;
+    background-size: cover;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem;
+}
+
+.left-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    /* Dark overlay for text readability */
+    z-index: 1;
+}
+
+.left-content {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+}
+
+.branding-text h1 {
+    font-size: 4rem;
+    font-weight: 800;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.1;
+    color: #fff;
+}
+
+.branding-text p {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+}
+
+.template-logo {
+    position: absolute;
+    top: 3rem;
+    left: 4rem;
+    z-index: 2;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.template-logo::before {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-top: 2px solid #00d2d3;
+    border-left: 2px solid #00d2d3;
+}
+
+.social-links {
+    position: absolute;
+    bottom: 3rem;
+    left: 4rem;
+    z-index: 2;
+    display: flex;
+    gap: 1.5rem;
+}
+
+.social-links a {
+    color: #fff;
+    font-size: 1.5rem;
+    transition: opacity 0.3s;
+}
+
+.social-links a:hover {
+    opacity: 0.7;
+}
+
+/* Right Panel - Form */
+.right-panel {
+    flex: 1;
+    background-color: #121212;
+    /* Dark background */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    position: relative;
+}
+
+.auth-box {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+}
+
+.right-panel-logo {
+    text-align: center;
+    margin-bottom: 3rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff;
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.right-panel-logo::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -20px;
+    width: 20px;
+    height: 20px;
+    border-top: 2px solid #00d2d3;
+    border-left: 2px solid #00d2d3;
+}
+
+.right-panel-logo::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    right: -20px;
+    width: 20px;
+    height: 20px;
+    border-bottom: 2px solid #00d2d3;
+    border-right: 2px solid #00d2d3;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+    color: #888;
+    font-size: 0.95rem;
+}
+
+/* Form Styling */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 1rem;
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #00d2d3;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 1rem;
+    background-color: #00d2d3;
+    /* Teal color from reference */
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-primary:hover {
+    background-color: #00b5b6;
+}
+
+.auth-links {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.auth-links a {
+    color: #00d2d3;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.auth-links a:hover {
+    color: #fff;
+}
+
+.social-login {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.social-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.social-btn:hover {
+    border-color: #00d2d3;
+    color: #00d2d3;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .split-screen-container {
+        flex-direction: column;
+    }
+
+    .left-panel {
+        min-height: 40vh;
+        padding: 2rem;
+    }
+
+    .branding-text h1 {
+        font-size: 2.5rem;
+    }
+
+    .branding-text p {
+        font-size: 1.1rem;
+    }
+
+    .right-panel {
+        padding: 3rem 1.5rem;
+    }
+
+    .template-logo {
+        top: 1.5rem;
+        left: 1.5rem;
+    }
+
+    .social-links {
+        display: none;
+        /* Hide social links on mobile top section to avoid clutter */
+    }
+}

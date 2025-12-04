@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sağlık Hizmetleri - Evde Sağlık</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        .marketplace-header {
+            background: linear-gradient(135deg, #00d2d3 0%, #0099cc 100%);
+            padding: 3rem 2rem;
+            margin: -2rem -2rem 2rem -2rem;
+            border-radius: 0 0 20px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .marketplace-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .marketplace-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .categories {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .category-btn {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 25px;
+            color: var(--text-main);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .category-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .category-btn.active {
+            background: linear-gradient(135deg, #00d2d3 0%, #0099cc 100%);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .service-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 210, 211, 0.3);
+            border-color: var(--primary);
+        }
+
+        .service-image {
+            height: 180px;
+            background: linear-gradient(135deg, rgba(0, 210, 211, 0.1) 0%, rgba(0, 153, 204, 0.1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--primary);
+        }
+
+        .service-content {
+            padding: 1.5rem;
+        }
+
+        .service-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .service-doctor {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .service-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .service-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .service-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .service-duration {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <h3 id="sidebarUserName">...</h3>
+                        <p>Hasta</p>
+                    </div>
+                </div>
+                <button onclick="window.location.href='profile.html'" class="btn btn-primary btn-block btn-sm">
+                    <i class="fas fa-user"></i> Profilim
+                </button>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="menu-item">
+                    <a href="dashboard.html" class="menu-link active">
+                        <i class="fas fa-home"></i> Ana Sayfa
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="appointments.html" class="menu-link">
+                        <i class="fas fa-calendar-check"></i> Randevularım
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="messages.html" class="menu-link">
+                        <i class="fas fa-envelope"></i> Mesajlarım
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="#" class="menu-link" onclick="api.auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="marketplace-header">
+                <h1><i class="fas fa-heartbeat"></i> Sağlık Hizmetleri</h1>
+                <p>İhtiyacınıza uygun sağlık hizmetini seçin ve randevu alın</p>
+            </div>
+
+            <!-- Categories -->
+            <div class="categories" id="categories">
+                <button class="category-btn active" onclick="filterByCategory('')">
+                    <i class="fas fa-th"></i> Tümü
+                </button>
+                <button class="category-btn" onclick="filterByCategory('GeneralMedicine')">
+                    <i class="fas fa-user-md"></i> Genel Tıp
+                </button>
+                <button class="category-btn" onclick="filterByCategory('Cardiology')">
+                    <i class="fas fa-heartbeat"></i> Kardiyoloji
+                </button>
+                <button class="category-btn" onclick="filterByCategory('Neurology')">
+                    <i class="fas fa-brain"></i> Nöroloji
+                </button>
+                <button class="category-btn" onclick="filterByCategory('Orthopedics')">
+                    <i class="fas fa-bone"></i> Ortopedi
+                </button>
+                <button class="category-btn" onclick="filterByCategory('PhysicalTherapy')">
+                    <i class="fas fa-walking"></i> Fizik Tedavi
+                </button>
+                <button class="category-btn" onclick="filterByCategory('NursingServices')">
+                    <i class="fas fa-user-nurse"></i> Hemşirelik
+                </button>
+                <button class="category-btn" onclick="filterByCategory('Pediatrics')">
+                    <i class="fas fa-baby"></i> Pediatri
+                </button>
+            </div>
+
+            <!-- Services Grid -->
+            <div id="servicesGrid" class="service-grid">
+                <!-- Services will be loaded here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-search"></i>
+                <h3>Hizmet bulunamadı</h3>
+                <p>Seçili kategoride hizmet bulunmuyor</p>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="spinner" style="display: none;"></div>
+        </main>
+    </div>
+
+    <!-- Service Detail Modal -->
+    <div id="serviceDetailModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 id="modalServiceTitle">Hizmet Detayı</h2>
+                <button class="modal-close" onclick="closeServiceModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="serviceDetailContent" style="padding: 1.5rem;">
+                <!-- Service details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Doktora Mesaj Gönder</h2>
+                <button class="modal-close" onclick="closeMessageModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="messageForm" onsubmit="handleSendMessage(event)">
+                <div style="padding: 1.5rem;">
+                    <input type="hidden" id="messageReceiverId">
+                    <input type="hidden" id="messageServiceId">
+                    <div class="form-group">
+                        <label for="messageContent">Mesajınız *</label>
+                        <textarea id="messageContent" name="content" required class="form-control" rows="5"
+                            placeholder="Doktora sormak istediğiniz soruları yazın..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeMessageModal()">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Gönder
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Appointment Modal -->
+    <div id="appointmentModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Randevu Al</h2>
+                <button class="modal-close" onclick="closeAppointmentModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="appointmentForm" onsubmit="handleBookAppointment(event)">
+                <div style="padding: 1.5rem;">
+                    <input type="hidden" id="appointmentServiceId">
+                    <div class="form-group">
+                        <label for="appointmentDate">Tarih *</label>
+                        <input type="date" id="appointmentDate" name="date" required class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="appointmentTime">Saat *</label>
+                        <input type="time" id="appointmentTime" name="time" required class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="appointmentNotes">Notlar (Opsiyonel)</label>
+                        <textarea id="appointmentNotes" name="notes" class="form-control" rows="3"
+                            placeholder="Doktora iletmek istediğiniz notlar..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAppointmentModal()">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Randevu Al
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script>
+        if (!requireAuth(['Patient'])) {
+            window.location.href = '../index.html';
+        }
+
+        let allServices = [];
+        let currentCategory = '';
+        let selectedService = null;
+
+        async function loadServices() {
+            try {
+                const user = api.getUser();
+                document.getElementById('sidebarUserName').textContent = `${user.firstName} ${user.lastName}`;
+
+                document.getElementById('loadingSpinner').style.display = 'block';
+
+                let url = '/patient/services';
+                if (currentCategory) {
+                    url += `/filter?specialization=${currentCategory}`;
+                }
+
+                const response = await api.request(url);
+                allServices = response.data || [];
+
+                renderServices();
+            } catch (error) {
+                console.error('Services load error:', error);
+                showToast('Hizmetler yüklenirken hata oluştu', 'error');
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+
+        function filterByCategory(category) {
+            currentCategory = category;
+
+            // Update active button
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            loadServices();
+        }
+
+        function renderServices() {
+            const grid = document.getElementById('servicesGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (allServices.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            emptyState.style.display = 'none';
+            grid.innerHTML = '';
+
+            allServices.forEach(service => {
+                const card = createServiceCard(service);
+                grid.appendChild(card);
+            });
+        }
+
+        function createServiceCard(service) {
+            const card = document.createElement('div');
+            card.className = 'service-card';
+            card.onclick = () => showServiceDetail(service.id);
+
+            const icon = getSpecializationIcon(service.specialization);
+
+            card.innerHTML = `
+                <div class="service-image">
+                    <i class="${icon}"></i>
+                </div>
+                <div class="service-content">
+                    <h3 class="service-title">${service.name}</h3>
+                    <div class="service-doctor">
+                        <i class="fas fa-user-md"></i>
+                        <span>${service.doctorName}</span>
+                    </div>
+                    <p class="service-description">${service.description}</p>
+                    <div class="service-footer">
+                        <div>
+                            <div class="service-price">${formatCurrency(service.basePrice)}</div>
+                            <div class="service-duration">
+                                <i class="fas fa-clock"></i> ${service.durationMinutes} dakika
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        async function showServiceDetail(serviceId) {
+            try {
+                document.getElementById('loadingSpinner').style.display = 'block';
+                const response = await api.request(`/patient/services/${serviceId}`);
+                selectedService = response.data;
+
+                const modal = document.getElementById('serviceDetailModal');
+                const content = document.getElementById('serviceDetailContent');
+
+                document.getElementById('modalServiceTitle').textContent = selectedService.name;
+
+                content.innerHTML = `
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="color: var(--text-main); margin-bottom: 0.5rem;">Doktor Bilgileri</h4>
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background-color: var(--bg-dark); border-radius: 8px;">
+                            <i class="fas fa-user-md" style="font-size: 2rem; color: var(--primary);"></i>
+                            <div>
+                                <div style="font-weight: 600; color: var(--text-main);">${selectedService.doctorName}</div>
+                                <div style="color: var(--text-secondary); font-size: 0.9rem;">${getSpecializationText(selectedService.specialization)}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="color: var(--text-main); margin-bottom: 0.5rem;">Hizmet Açıklaması</h4>
+                        <p style="color: var(--text-secondary); line-height: 1.6;">${selectedService.description}</p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="padding: 1rem; background-color: var(--bg-dark); border-radius: 8px;">
+                            <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.25rem;">Ücret</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">${formatCurrency(selectedService.basePrice)}</div>
+                        </div>
+                        <div style="padding: 1rem; background-color: var(--bg-dark); border-radius: 8px;">
+                            <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.25rem;">Süre</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);">${selectedService.durationMinutes} dk</div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem;">
+                        <button onclick="openMessageModal()" class="btn btn-secondary" style="flex: 1;">
+                            <i class="fas fa-comment"></i> Mesaj Gönder
+                        </button>
+                        <button onclick="openAppointmentModal()" class="btn btn-primary" style="flex: 1;">
+                            <i class="fas fa-calendar-plus"></i> Randevu Al
+                        </button>
+                    </div>
+                `;
+
+                modal.style.display = 'flex';
+            } catch (error) {
+                console.error('Service detail error:', error);
+                showToast('Hizmet detayı yüklenemedi', 'error');
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+
+        function closeServiceModal() {
+            document.getElementById('serviceDetailModal').style.display = 'none';
+        }
+
+        function openMessageModal() {
+            document.getElementById('messageReceiverId').value = selectedService.doctorUserId;
+            document.getElementById('messageServiceId').value = selectedService.id;
+            document.getElementById('messageModal').style.display = 'flex';
+        }
+
+        function closeMessageModal() {
+            document.getElementById('messageModal').style.display = 'none';
+            document.getElementById('messageForm').reset();
+        }
+
+        async function handleSendMessage(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const messageData = {
+                receiverId: document.getElementById('messageReceiverId').value,
+                serviceId: document.getElementById('messageServiceId').value,
+                content: formData.get('content')
+            };
+
+            try {
+                const response = await api.messages.sendMessage(messageData);
+                if (response.success) {
+                    showToast('Mesaj başarıyla gönderildi!', 'success');
+                    closeMessageModal();
+                } else {
+                    showToast(response.message || 'Mesaj gönderilemedi', 'error');
+                }
+            } catch (error) {
+                console.error('Send message error:', error);
+                showToast('Bir hata oluştu', 'error');
+            }
+        }
+
+        function openAppointmentModal() {
+            document.getElementById('appointmentServiceId').value = selectedService.id;
+
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointmentDate').min = today;
+
+            document.getElementById('appointmentModal').style.display = 'flex';
+        }
+
+        function closeAppointmentModal() {
+            document.getElementById('appointmentModal').style.display = 'none';
+            document.getElementById('appointmentForm').reset();
+        }
+
+        async function handleBookAppointment(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const date = formData.get('date');
+            const time = formData.get('time');
+            const scheduledDateTime = `${date}T${time}:00`;
+
+            const appointmentData = {
+                serviceId: document.getElementById('appointmentServiceId').value,
+                scheduledDateTime: scheduledDateTime,
+                notes: formData.get('notes') || ''
+            };
+
+            try {
+                const response = await api.request('/patient/appointments', {
+                    method: 'POST',
+                    body: JSON.stringify(appointmentData)
+                });
+
+                if (response.success) {
+                    showToast('Randevu başarıyla oluşturuldu! Doktor onayını bekliyor.', 'success');
+                    closeAppointmentModal();
+                    closeServiceModal();
+                } else {
+                    showToast(response.message || 'Randevu oluşturulamadı', 'error');
+                }
+            } catch (error) {
+                console.error('Book appointment error:', error);
+                showToast('Bir hata oluştu', 'error');
+            }
+        }
+
+        function getSpecializationIcon(spec) {
+            const icons = {
+                'GeneralMedicine': 'fas fa-user-md',
+                'Cardiology': 'fas fa-heartbeat',
+                'Neurology': 'fas fa-brain',
+                'Orthopedics': 'fas fa-bone',
+                'PhysicalTherapy': 'fas fa-walking',
+                'NursingServices': 'fas fa-user-nurse',
+                'Pediatrics': 'fas fa-baby',
+                'Gynecology': 'fas fa-venus',
+                'Psychiatry': 'fas fa-head-side-virus',
+                'Dermatology': 'fas fa-hand-sparkles'
+            };
+            return icons[spec] || 'fas fa-stethoscope';
+        }
+
+        function getSpecializationText(spec) {
+            const map = {
+                'GeneralMedicine': 'Genel Tıp',
+                'Cardiology': 'Kardiyoloji',
+                'Neurology': 'Nöroloji',
+                'Orthopedics': 'Ortopedi',
+                'GeneralSurgery': 'Genel Cerrahi',
+                'PhysicalTherapy': 'Fizik Tedavi',
+                'NursingServices': 'Hemşirelik',
+                'LaboratoryServices': 'Laboratuvar',
+                'Dermatology': 'Dermatoloji',
+                'Pediatrics': 'Pediatri',
+                'Gynecology': 'Jinekoloji',
+                'Psychiatry': 'Psikiyatri',
+                'Other': 'Diğer'
+            };
+            return map[spec] || spec;
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function (event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        loadServices();
+    </script>
+</body>
+
+</html>

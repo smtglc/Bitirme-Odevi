@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profilim - Evde Sağlık</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <h3 id="sidebarUserName">...</h3>
+                        <p>Hasta</p>
+                    </div>
+                </div>
+                <button onclick="window.location.href='profile.html'" class="btn btn-primary btn-block btn-sm">
+                    <i class="fas fa-user"></i> Profilim
+                </button>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="menu-item">
+                    <a href="dashboard.html" class="menu-link">
+                        <i class="fas fa-home"></i> Ana Sayfa
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="appointments.html" class="menu-link">
+                        <i class="fas fa-calendar-check"></i> Randevularım
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="messages.html" class="menu-link">
+                        <i class="fas fa-envelope"></i> Mesajlarım
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="#" class="menu-link" onclick="api.auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Profilim</h1>
+            </div>
+
+            <!-- Profile Form -->
+            <div class="card">
+                <form id="profileForm" onsubmit="handleUpdateProfile(event)">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--text-main);">Kişisel Bilgiler</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">Ad *</label>
+                            <input type="text" id="firstName" name="firstName" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Soyad *</label>
+                            <input type="text" id="lastName" name="lastName" required class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">E-posta *</label>
+                            <input type="email" id="email" name="email" required class="form-control" readonly
+                                style="background-color: var(--bg-dark); opacity: 0.7;">
+                            <small style="color: var(--text-secondary); font-size: 0.85rem;">E-posta
+                                değiştirilemez</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneNumber">Telefon *</label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" required class="form-control">
+                        </div>
+                    </div>
+
+                    <h3 style="margin: 2rem 0 1.5rem; color: var(--text-main);">Sağlık Bilgileri (Opsiyonel)</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dateOfBirth">Doğum Tarihi</label>
+                            <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="bloodType">Kan Grubu</label>
+                            <select id="bloodType" name="bloodType" class="form-control">
+                                <option value="">Seçiniz...</option>
+                                <option value="A+">A Rh+</option>
+                                <option value="A-">A Rh-</option>
+                                <option value="B+">B Rh+</option>
+                                <option value="B-">B Rh-</option>
+                                <option value="AB+">AB Rh+</option>
+                                <option value="AB-">AB Rh-</option>
+                                <option value="O+">0 Rh+</option>
+                                <option value="O-">0 Rh-</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Adres</label>
+                        <textarea id="address" name="address" class="form-control" rows="3"
+                            placeholder="Ev adresinizi girin..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="medicalHistory">Tıbbi Geçmiş / Kronik Hastalıklar</label>
+                        <textarea id="medicalHistory" name="medicalHistory" class="form-control" rows="4"
+                            placeholder="Kronik hastalıklarınız, alerjileriniz veya sürekli kullandığınız ilaçlar varsa belirtin..."></textarea>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                        <button type="button" class="btn btn-secondary" onclick="loadProfile()">
+                            <i class="fas fa-undo"></i> Sıfırla
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="spinner" style="display: none;"></div>
+        </main>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script>
+        if (!requireAuth(['Patient'])) {
+            window.location.href = '../index.html';
+        }
+
+        let profileData = null;
+
+        async function loadProfile() {
+            try {
+                const user = api.getUser();
+                document.getElementById('sidebarUserName').textContent = `${user.firstName} ${user.lastName}`;
+
+                document.getElementById('loadingSpinner').style.display = 'block';
+                const response = await api.request('/profile');
+                profileData = response.data;
+
+                // Fill form with profile data
+                document.getElementById('firstName').value = profileData.firstName || '';
+                document.getElementById('lastName').value = profileData.lastName || '';
+                document.getElementById('email').value = profileData.email || '';
+                document.getElementById('phoneNumber').value = profileData.phoneNumber || '';
+                document.getElementById('dateOfBirth').value = profileData.dateOfBirth ? profileData.dateOfBirth.split('T')[0] : '';
+                document.getElementById('bloodType').value = profileData.bloodType || '';
+                document.getElementById('address').value = profileData.address || '';
+                document.getElementById('medicalHistory').value = profileData.medicalHistory || '';
+
+            } catch (error) {
+                console.error('Profile load error:', error);
+                showToast('Profil yüklenirken hata oluştu', 'error');
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+
+        async function handleUpdateProfile(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const updateData = {
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                phoneNumber: formData.get('phoneNumber'),
+                dateOfBirth: formData.get('dateOfBirth') || null,
+                bloodType: formData.get('bloodType') || null,
+                address: formData.get('address') || null,
+                medicalHistory: formData.get('medicalHistory') || null
+            };
+
+            try {
+                document.getElementById('loadingSpinner').style.display = 'block';
+                const response = await api.request('/profile', {
+                    method: 'PUT',
+                    body: JSON.stringify(updateData)
+                });
+
+                if (response.success) {
+                    showToast('Profil başarıyla güncellendi!', 'success');
+
+                    // Update local storage
+                    const user = api.getUser();
+                    user.firstName = updateData.firstName;
+                    user.lastName = updateData.lastName;
+                    localStorage.setItem('user', JSON.stringify(user));
+
+                    // Update sidebar
+                    document.getElementById('sidebarUserName').textContent = `${updateData.firstName} ${updateData.lastName}`;
+
+                    await loadProfile();
+                } else {
+                    showToast(response.message || 'Profil güncellenemedi', 'error');
+                }
+            } catch (error) {
+                console.error('Profile update error:', error);
+                showToast('Bir hata oluştu: ' + error.message, 'error');
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+
+        loadProfile();
+    </script>
+</body>
+
+</html>

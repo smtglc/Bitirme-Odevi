@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelen Kutusu - Evde Sağlık</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/inbox.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div class="user-info">
+                        <h3 id="sidebarUserName">Dr. ...</h3>
+                        <p>Doktor</p>
+                    </div>
+                </div>
+                <button onclick="window.location.href='profile.html'" class="btn btn-primary btn-block btn-sm">
+                    <i class="fas fa-user"></i> Profilim
+                </button>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="menu-item">
+                    <a href="dashboard.html" class="menu-link">
+                        <i class="fas fa-home"></i> Ana Ekran
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="inbox.html" class="menu-link active">
+                        <i class="fas fa-inbox"></i> Gelen Kutusu
+                        <span id="unreadCount" class="badge badge-danger"
+                            style="margin-left: auto; display: none;">0</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="appointments.html" class="menu-link">
+                        <i class="fas fa-calendar-check"></i> Randevularım
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="services.html" class="menu-link">
+                        <i class="fas fa-stethoscope"></i> Hizmetlerim
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="documents.html" class="menu-link">
+                        <i class="fas fa-folder-open"></i> Belgelerim
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="#" class="menu-link" onclick="api.auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Gelen Kutusu</h1>
+            </div>
+
+            <!-- Messages List -->
+            <div id="messagesContainer" class="message-list">
+                <!-- Messages will be loaded here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-envelope-open"></i>
+                <h3>Henüz mesaj yok</h3>
+                <p>Hastalardan gelen mesajlar burada görünecektir</p>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="spinner" style="display: none;"></div>
+        </main>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script>
+        if (!requireAuth(['Doctor'])) {
+            window.location.href = '../index.html';
+        }
+
+        let messages = [];
+
+        async function loadMessages() {
+            try {
+                const user = api.getUser();
+                document.getElementById('sidebarUserName').textContent = `Dr. ${user.firstName} ${user.lastName}`;
+
+                document.getElementById('loadingSpinner').style.display = 'block';
+                const response = await api.messages.getMessages();
+                messages = response.data || [];
+
+                renderMessages();
+                updateUnreadCount();
+            } catch (error) {
+                console.error('Messages load error:', error);
+                showToast('Mesajlar yüklenirken hata oluştu', 'error');
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+
+        function renderMessages() {
+            const container = document.getElementById('messagesContainer');
+            const emptyState = document.getElementById('emptyState');
+
+            if (messages.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            container.style.display = 'flex';
+            emptyState.style.display = 'none';
+            container.innerHTML = '';
+
+            // Sort messages by date (newest first)
+            const sortedMessages = [...messages].sort((a, b) =>
+                new Date(b.createdAt) - new Date(a.createdAt)
+            );
+
+            sortedMessages.forEach(message => {
+                const messageCard = createMessageCard(message);
+                container.appendChild(messageCard);
+            });
+        }
+
+        function createMessageCard(message) {
+            const card = document.createElement('div');
+            card.className = `message-item ${!message.isRead ? 'unread' : ''}`;
+            card.onclick = () => viewMessage(message);
+
+            const timeAgo = getTimeAgo(message.createdAt);
+
+            // Determine if this is a sent or received message
+            const user = api.getUser();
+            const isSent = message.senderId === user.id;
+
+            // For doctors, show patient name
+            const displayName = isSent ? message.receiverName : message.senderName;
+            const messageDirection = isSent ? 'Gönderildi' : 'Alındı';
+            const iconClass = isSent ? 'fa-paper-plane' : 'fa-user';
+
+            card.innerHTML = `
+                ${!message.isRead && !isSent ? '<div class="unread-badge"></div>' : ''}
+                <div class="message-header">
+                    <div>
+                        <div class="message-sender">
+                            <i class="fas ${iconClass}"></i> ${displayName}
+                        </div>
+                        <div class="message-direction">
+                            <i class="fas fa-${isSent ? 'arrow-up' : 'arrow-down'}"></i> ${messageDirection}
+                        </div>
+                    </div>
+                    <div class="message-time">${timeAgo}</div>
+                </div>
+                <div class="message-content">${message.content}</div>
+                ${message.serviceName ? `<span class="message-service"><i class="fas fa-stethoscope"></i> ${message.serviceName}</span>` : ''}
+            `;
+
+            return card;
+        }
+
+        async function viewMessage(message) {
+            // Mark as read if unread and received
+            const user = api.getUser();
+            if (!message.isRead && message.receiverId === user.id) {
+                try {
+                    await api.messages.markAsRead(message.id);
+                    message.isRead = true;
+                    renderMessages();
+                    updateUnreadCount();
+                } catch (error) {
+                    console.error('Mark as read error:', error);
+                }
+            }
+
+            // Show message details
+            const isSent = message.senderId === user.id;
+            const displayName = isSent ? message.receiverName : message.senderName;
+            alert(`Mesaj Detayı:\n\n${isSent ? 'Alıcı' : 'Gönderen'}: ${displayName}\nTarih: ${formatDate(message.createdAt)}\n${message.serviceName ? 'Hizmet: ' + message.serviceName + '\n' : ''}\nMesaj:\n${message.content}`);
+        }
+
+        function updateUnreadCount() {
+            const user = api.getUser();
+            const unreadCount = messages.filter(m => !m.isRead && m.receiverId === user.id).length;
+            const badge = document.getElementById('unreadCount');
+
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function getTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+
+            if (seconds < 60) return 'Az önce';
+            if (seconds < 3600) return Math.floor(seconds / 60) + ' dakika önce';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + ' saat önce';
+            if (seconds < 604800) return Math.floor(seconds / 86400) + ' gün önce';
+
+            return formatDate(dateString);
+        }
+
+        loadMessages();
+    </script>
+</body>
+
+</html>

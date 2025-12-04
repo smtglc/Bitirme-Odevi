@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Randevularım - Evde Sağlık</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        .appointment-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+        }
+
+        .appointment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .appointment-service {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .appointment-doctor {
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .appointment-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background-color: var(--bg-dark);
+            border-radius: 8px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-item i {
+            color: var(--primary);
+            width: 20px;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .detail-value {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .status-pending {
+            border-left: 4px solid var(--warning);
+        }
+
+        .status-confirmed {
+            border-left: 4px solid var(--primary);
+        }
+
+        .status-completed {
+            border-left: 4px solid var(--success);
+        }
+
+        .status-cancelled {
+            border-left: 4px solid var(--danger);
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <h3 id="sidebarUserName">...</h3>
+                        <p>Hasta</p>
+                    </div>
+                </div>
+                <button onclick="window.location.href='profile.html'" class="btn btn-primary btn-block btn-sm">
+                    <i class="fas fa-user"></i> Profilim
+                </button>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="menu-item">
+                    <a href="dashboard.html" class="menu-link">
+                        <i class="fas fa-home"></i> Ana Sayfa
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="appointments.html" class="menu-link active">
+                        <i class="fas fa-calendar-check"></i> Randevularım
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="messages.html" class="menu-link">
+                        <i class="fas fa-envelope"></i> Mesajlarım
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="#" class="menu-link" onclick="api.auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Randevularım</h1>
+            </div>
+
+            <!-- Appointments List -->
+            <div id="appointmentsContainer">
+                <!-- Appointments will be loaded here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-calendar-times"></i>
+                <h3>Henüz randevunuz yok</h3>
+                <p>Ana sayfadan hizmet seçerek randevu alabilirsiniz</p>
+                <button onclick="window.location.href='dashboard.html'" class="btn btn-primary"
+                    style="margin-top: 1rem;">
+                    <i class="fas fa-search"></i> Hizmetleri Gör
+                </button>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="spinner" style="display: none;"></div>
+        </main>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script>
+        if (!requireAuth(['Patient'])) {
+            window.location.href = '../index.html';
+        }
+
+        let appointments = [];
+
+        async function loadAppointments() {
+            try {
+                const user = api.getUser();
+                document.getElementById('sidebarUserName').textContent = `${user.firstName} ${user.lastName}`;
+
+                document.getElementById('loadingSpinner').style.display = 'block';
+                const response = await api.request('/patient/appointments');
+                appointments = response.data || [];
+
+                renderAppointments();
+            } catch (error) {
+                console.error('Appointments load error:', error);
+                showToast('Randevular yüklenirken hata oluştu', 'error');
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+
+        function renderAppointments() {
+            const container = document.getElementById('appointmentsContainer');
+            const emptyState = document.getElementById('emptyState');
+
+            if (appointments.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            container.style.display = 'block';
+            emptyState.style.display = 'none';
+            container.innerHTML = '';
+
+            // Sort by date (newest first)
+            appointments.sort((a, b) => new Date(b.scheduledDateTime) - new Date(a.scheduledDateTime));
+
+            appointments.forEach(appointment => {
+                const card = createAppointmentCard(appointment);
+                container.appendChild(card);
+            });
+        }
+
+        function createAppointmentCard(apt) {
+            const card = document.createElement('div');
+            card.className = `appointment-card status-${apt.status.toLowerCase()}`;
+
+            const statusText = getStatusText(apt.status);
+            const statusBadge = `<span class="badge badge-${getStatusColor(apt.status)}">${statusText}</span>`;
+
+            const dateTime = new Date(apt.scheduledDateTime);
+            const dateStr = dateTime.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+            const timeStr = dateTime.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+
+            card.innerHTML = `
+                <div class="appointment-header">
+                    <div>
+                        <div class="appointment-service">
+                            <i class="fas fa-stethoscope"></i> ${apt.serviceName}
+                        </div>
+                        <div class="appointment-doctor">
+                            <i class="fas fa-user-md"></i> ${apt.doctorName}
+                        </div>
+                    </div>
+                    ${statusBadge}
+                </div>
+                <div class="appointment-details">
+                    <div class="detail-item">
+                        <i class="fas fa-calendar"></i>
+                        <div>
+                            <div class="detail-label">Tarih</div>
+                            <div class="detail-value">${dateStr}</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <div class="detail-label">Saat</div>
+                            <div class="detail-value">${timeStr}</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-lira-sign"></i>
+                        <div>
+                            <div class="detail-label">Ücret</div>
+                            <div class="detail-value">${formatCurrency(apt.totalAmount)}</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-hourglass-half"></i>
+                        <div>
+                            <div class="detail-label">Süre</div>
+                            <div class="detail-value">${apt.durationMinutes} dk</div>
+                        </div>
+                    </div>
+                </div>
+                ${apt.notes ? `<p style="color: var(--text-secondary); margin: 1rem 0;"><i class="fas fa-comment"></i> ${apt.notes}</p>` : ''}
+                ${apt.status === 'Pending' || apt.status === 'Confirmed' ? `
+                    <button onclick="cancelAppointment('${apt.id}')" class="btn btn-danger btn-sm">
+                        <i class="fas fa-times"></i> Randevuyu İptal Et
+                    </button>
+                ` : ''}
+            `;
+
+            return card;
+        }
+
+        function getStatusText(status) {
+            const map = {
+                'Pending': 'Onay Bekliyor',
+                'Confirmed': 'Onaylandı',
+                'Completed': 'Tamamlandı',
+                'Cancelled': 'İptal Edildi'
+            };
+            return map[status] || status;
+        }
+
+        function getStatusColor(status) {
+            const map = {
+                'Pending': 'warning',
+                'Confirmed': 'info',
+                'Completed': 'success',
+                'Cancelled': 'danger'
+            };
+            return map[status] || 'secondary';
+        }
+
+        async function cancelAppointment(id) {
+            if (!confirm('Bu randevuyu iptal etmek istediğinizden emin misiniz?')) return;
+
+            try {
+                const response = await api.request(`/patient/appointments/${id}/cancel`, {
+                    method: 'PUT'
+                });
+
+                if (response.success) {
+                    showToast('Randevu iptal edildi', 'success');
+                    await loadAppointments();
+                } else {
+                    showToast(response.message || 'Randevu iptal edilemedi', 'error');
+                }
+            } catch (error) {
+                console.error('Cancel error:', error);
+                showToast('Bir hata oluştu', 'error');
+            }
+        }
+
+        loadAppointments();
+    </script>
+</body>
+
+</html>
