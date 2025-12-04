@@ -54,6 +54,12 @@
                         <i class="fas fa-folder-open"></i> Belgelerim
                     </a>
                 </li>
+                <li class="menu-item">
+                    <button onclick="openCreateServiceModal()" class="btn btn-primary btn-block btn-sm"
+                        style="margin: 0.5rem 1.5rem;">
+                        <i class="fas fa-plus"></i> Hizmet Oluştur
+                    </button>
+                </li>
             </ul>
 
             <div class="sidebar-footer">
@@ -77,6 +83,66 @@
         </main>
     </div>
 
+    <!-- Create Service Modal -->
+    <div id="createServiceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Yeni Hizmet Oluştur</h2>
+                <button class="modal-close" onclick="closeCreateServiceModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="createServiceForm" onsubmit="handleCreateService(event)">
+                <div class="form-group">
+                    <label for="serviceName">Hizmet Adı *</label>
+                    <input type="text" id="serviceName" name="name" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="serviceDescription">Açıklama *</label>
+                    <textarea id="serviceDescription" name="description" required class="form-control"
+                        rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="servicePrice">Fiyat (₺) *</label>
+                        <input type="number" id="servicePrice" name="basePrice" required class="form-control" min="0"
+                            step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceDuration">Süre (Dakika) *</label>
+                        <input type="number" id="serviceDuration" name="durationMinutes" required class="form-control"
+                            min="15" step="15">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="serviceSpecialization">Uzmanlık Alanı *</label>
+                    <select id="serviceSpecialization" name="specialization" required class="form-control">
+                        <option value="">Seçiniz...</option>
+                        <option value="GeneralMedicine">Genel Tıp</option>
+                        <option value="Cardiology">Kardiyoloji</option>
+                        <option value="Neurology">Nöroloji</option>
+                        <option value="Orthopedics">Ortopedi</option>
+                        <option value="GeneralSurgery">Genel Cerrahi</option>
+                        <option value="PhysicalTherapy">Fizik Tedavi</option>
+                        <option value="NursingServices">Hemşirelik Hizmetleri</option>
+                        <option value="LaboratoryServices">Laboratuvar Hizmetleri</option>
+                        <option value="Dermatology">Dermatoloji</option>
+                        <option value="Pediatrics">Pediatri</option>
+                        <option value="Gynecology">Jinekoloji</option>
+                        <option value="Psychiatry">Psikiyatri</option>
+                        <option value="Other">Diğer</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeCreateServiceModal()">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="../js/api.js"></script>
     <script>
         if (!requireAuth(['Doctor'])) {
@@ -84,6 +150,49 @@
         }
         const user = api.getUser();
         document.getElementById('sidebarUserName').textContent = `Dr. ${user.firstName} ${user.lastName}`;
+
+        // Service Modal Functions
+        function openCreateServiceModal() {
+            document.getElementById('createServiceModal').style.display = 'flex';
+        }
+
+        function closeCreateServiceModal() {
+            document.getElementById('createServiceModal').style.display = 'none';
+            document.getElementById('createServiceForm').reset();
+        }
+
+        async function handleCreateService(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const serviceData = {
+                name: formData.get('name'),
+                description: formData.get('description'),
+                basePrice: parseFloat(formData.get('basePrice')),
+                durationMinutes: parseInt(formData.get('durationMinutes')),
+                specialization: formData.get('specialization')
+            };
+
+            try {
+                const response = await api.doctor.createService(serviceData);
+                if (response.success) {
+                    showToast('Hizmet başarıyla oluşturuldu!', 'success');
+                    closeCreateServiceModal();
+                } else {
+                    showToast(response.message || 'Hizmet oluşturulamadı', 'error');
+                }
+            } catch (error) {
+                console.error('Service creation error:', error);
+                showToast('Bir hata oluştu: ' + error.message, 'error');
+            }
+        }
+
+        window.onclick = function (event) {
+            const modal = document.getElementById('createServiceModal');
+            if (event.target === modal) {
+                closeCreateServiceModal();
+            }
+        }
     </script>
 </body>
 
