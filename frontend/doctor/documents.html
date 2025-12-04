@@ -7,6 +7,7 @@
     <title>Belgelerim - Evde Sağlık</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/documents.css">
 </head>
 
 <body>
@@ -72,15 +73,84 @@
         <!-- Main Content -->
         <main class="main-content">
             <div class="page-header">
-                <h1>Belgelerim</h1>
+                <h1><i class="fas fa-folder-open"></i> Belgelerim</h1>
             </div>
 
-            <div class="empty-state">
-                <i class="fas fa-tools"></i>
-                <h3>Bu sayfa yapım aşamasında</h3>
-                <p>Yakında aktif olacak</p>
+            <!-- Documents Grid -->
+            <div id="documentsGrid" class="documents-grid">
+                <!-- Documents will be loaded here -->
             </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-folder-open"></i>
+                <h3>Henüz belge yok</h3>
+                <p>Yeni belge eklemek için sağ alttaki + butonuna tıklayın</p>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="spinner" style="display: none;"></div>
         </main>
+    </div>
+
+    <!-- Upload Button -->
+    <button class="upload-button" onclick="openUploadModal()" title="Belge Yükle">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Upload/Edit Document Modal -->
+    <div id="documentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Yeni Belge Ekle</h2>
+                <button class="modal-close" onclick="closeDocumentModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="documentForm" onsubmit="handleDocumentSubmit(event)">
+                <input type="hidden" id="documentId" name="id">
+                <div class="form-group">
+                    <label for="documentTitle">Başlık *</label>
+                    <input type="text" id="documentTitle" name="title" required class="form-control"
+                        placeholder="Belge başlığı">
+                </div>
+                <div class="form-group">
+                    <label for="documentDescription">Açıklama / Notlar</label>
+                    <textarea id="documentDescription" name="description" class="form-control" rows="4"
+                        placeholder="Belge hakkında notlarınız..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="documentFile">Dosya <span id="fileRequired">*</span></label>
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <div class="file-upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="file-upload-text">Dosya seçmek için tıklayın veya sürükleyin</div>
+                        <div class="file-upload-hint">PDF, JPG, JPEG, PNG (Max 10MB)</div>
+                        <input type="file" id="documentFile" name="file" accept=".pdf,.jpg,.jpeg,.png"
+                            style="display: none;">
+                    </div>
+                    <div class="file-preview" id="filePreview">
+                        <div class="file-preview-content">
+                            <i class="fas fa-file file-preview-icon" id="filePreviewIcon"></i>
+                            <div class="file-preview-info">
+                                <div class="file-preview-name" id="filePreviewName"></div>
+                                <div class="file-preview-size" id="filePreviewSize"></div>
+                            </div>
+                            <button type="button" class="file-preview-remove" onclick="removeFile()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeDocumentModal()">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Create Service Modal -->
@@ -148,8 +218,262 @@
         if (!requireAuth(['Doctor'])) {
             window.location.href = '../index.html';
         }
-        const user = api.getUser();
-        document.getElementById('sidebarUserName').textContent = `Dr. ${user.firstName} ${user.lastName}`;
+
+        let documents = [];
+        let currentFile = null;
+        let editingDocumentId = null;
+
+        async function loadDocuments() {
+            try {
+                const user = api.getUser();
+                document.getElementById('sidebarUserName').textContent = `Dr. ${user.firstName} ${user.lastName}`;
+
+                document.getElementById('loadingSpinner').style.display = 'block';
+                const response = await api.doctor.getDocuments();
+                documents = response.data || [];
+
+                renderDocuments();
+            } catch (error) {
+                console.error('Documents load error:', error);
+                showToast('Belgeler yüklenirken hata oluştu', 'error');
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+
+        function renderDocuments() {
+            const grid = document.getElementById('documentsGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (documents.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            emptyState.style.display = 'none';
+            grid.innerHTML = '';
+
+            documents.forEach(doc => {
+                const card = createDocumentCard(doc);
+                grid.appendChild(card);
+            });
+        }
+
+        function createDocumentCard(doc) {
+            const card = document.createElement('div');
+            card.className = 'document-card';
+
+            const isImage = doc.fileType && doc.fileType.startsWith('image/');
+            const isPdf = doc.fileType && doc.fileType.includes('pdf');
+
+            let iconHtml = '';
+            if (doc.filePath && isImage) {
+                iconHtml = `<img src="${doc.filePath}" class="document-preview" alt="${doc.title}">`;
+            } else {
+                const iconClass = isPdf ? 'fa-file-pdf pdf' : 'fa-file image';
+                iconHtml = `<div class="document-icon ${isPdf ? 'pdf' : 'image'}"><i class="fas ${iconClass}"></i></div>`;
+            }
+
+            const fileSize = doc.fileSize ? formatFileSize(doc.fileSize) : 'N/A';
+            const createdDate = formatDate(doc.createdAt);
+
+            card.innerHTML = `
+                ${iconHtml}
+                <div class="document-title">${doc.title}</div>
+                ${doc.description ? `<div class="document-description">${doc.description}</div>` : ''}
+                <div class="document-meta">
+                    <div class="document-meta-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>${createdDate}</span>
+                    </div>
+                    <div class="document-meta-item">
+                        <i class="fas fa-hdd"></i>
+                        <span>${fileSize}</span>
+                    </div>
+                </div>
+                <div class="document-actions">
+                    ${doc.filePath ? `<button class="btn btn-primary btn-sm" onclick="viewDocument('${doc.filePath}', ${isPdf})"><i class="fas fa-eye"></i> Görüntüle</button>` : ''}
+                    <button class="btn btn-secondary btn-sm" onclick='editDocument(${JSON.stringify(doc)})'><i class="fas fa-edit"></i> Düzenle</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteDocument('${doc.id}')"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function openUploadModal() {
+            editingDocumentId = null;
+            document.getElementById('modalTitle').textContent = 'Yeni Belge Ekle';
+            document.getElementById('fileRequired').style.display = 'inline';
+            document.getElementById('documentForm').reset();
+            document.getElementById('documentId').value = '';
+            currentFile = null;
+            document.getElementById('filePreview').classList.remove('active');
+            document.getElementById('documentModal').style.display = 'flex';
+        }
+
+        function closeDocumentModal() {
+            document.getElementById('documentModal').style.display = 'none';
+            document.getElementById('documentForm').reset();
+            currentFile = null;
+            editingDocumentId = null;
+        }
+
+        function editDocument(doc) {
+            editingDocumentId = doc.id;
+            document.getElementById('modalTitle').textContent = 'Belge Düzenle';
+            document.getElementById('fileRequired').style.display = 'none';
+            document.getElementById('documentId').value = doc.id;
+            document.getElementById('documentTitle').value = doc.title;
+            document.getElementById('documentDescription').value = doc.description || '';
+            currentFile = null;
+            document.getElementById('filePreview').classList.remove('active');
+            document.getElementById('documentModal').style.display = 'flex';
+        }
+
+        async function handleDocumentSubmit(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append('title', document.getElementById('documentTitle').value);
+            formData.append('description', document.getElementById('documentDescription').value || '');
+
+            if (currentFile) {
+                formData.append('file', currentFile);
+            } else if (!editingDocumentId) {
+                showToast('Lütfen bir dosya seçin', 'error');
+                return;
+            }
+
+            try {
+                document.getElementById('loadingSpinner').style.display = 'block';
+                let response;
+
+                if (editingDocumentId) {
+                    response = await api.doctor.updateDocument(editingDocumentId, formData);
+                } else {
+                    response = await api.doctor.createDocument(formData);
+                }
+
+                if (response.success) {
+                    showToast(editingDocumentId ? 'Belge güncellendi!' : 'Belge yüklendi!', 'success');
+                    closeDocumentModal();
+                    await loadDocuments();
+                } else {
+                    showToast(response.message || 'İşlem başarısız', 'error');
+                }
+            } catch (error) {
+                console.error('Document save error:', error);
+                showToast('Bir hata oluştu: ' + error.message, 'error');
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+
+        async function deleteDocument(id) {
+            if (!confirm('Bu belgeyi silmek istediğinizden emin misiniz?')) {
+                return;
+            }
+
+            try {
+                document.getElementById('loadingSpinner').style.display = 'block';
+                await api.doctor.deleteDocument(id);
+                showToast('Belge silindi', 'success');
+                await loadDocuments();
+            } catch (error) {
+                console.error('Delete error:', error);
+                showToast(error.message || 'Belge silinirken hata oluştu', 'error');
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+
+        function viewDocument(filePath, isPdf) {
+            if (isPdf) {
+                window.open(filePath, '_blank');
+            } else {
+                window.open(filePath, '_blank');
+            }
+        }
+
+        // File Upload Handling
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileInput = document.getElementById('documentFile');
+
+        fileUploadArea.addEventListener('click', () => fileInput.click());
+
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('dragover');
+        });
+
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('dragover');
+        });
+
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        function handleFileSelect(file) {
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+
+            if (!allowedTypes.includes(file.type)) {
+                showToast('Sadece PDF ve resim dosyaları yüklenebilir', 'error');
+                return;
+            }
+
+            if (file.size > maxSize) {
+                showToast('Dosya boyutu 10MB\'dan küçük olmalıdır', 'error');
+                return;
+            }
+
+            currentFile = file;
+            displayFilePreview(file);
+        }
+
+        function displayFilePreview(file) {
+            const preview = document.getElementById('filePreview');
+            const icon = document.getElementById('filePreviewIcon');
+            const name = document.getElementById('filePreviewName');
+            const size = document.getElementById('filePreviewSize');
+
+            const isPdf = file.type.includes('pdf');
+            icon.className = `fas ${isPdf ? 'fa-file-pdf' : 'fa-file-image'} file-preview-icon`;
+
+            name.textContent = file.name;
+            size.textContent = formatFileSize(file.size);
+
+            preview.classList.add('active');
+        }
+
+        function removeFile() {
+            currentFile = null;
+            fileInput.value = '';
+            document.getElementById('filePreview').classList.remove('active');
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
 
         // Service Modal Functions
         function openCreateServiceModal() {
@@ -188,11 +512,18 @@
         }
 
         window.onclick = function (event) {
-            const modal = document.getElementById('createServiceModal');
-            if (event.target === modal) {
+            const serviceModal = document.getElementById('createServiceModal');
+            const documentModal = document.getElementById('documentModal');
+
+            if (event.target === serviceModal) {
                 closeCreateServiceModal();
             }
+            if (event.target === documentModal) {
+                closeDocumentModal();
+            }
         }
+
+        loadDocuments();
     </script>
 </body>
 
