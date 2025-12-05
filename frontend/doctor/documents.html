@@ -153,6 +153,22 @@
         </div>
     </div>
 
+    <!-- Image Preview Modal -->
+    <div id="imagePreviewModal" class="modal">
+        <div class="modal-content" style="max-width: 90%; max-height: 90vh;">
+            <div class="modal-header">
+                <h2 id="imagePreviewTitle">Belge Görüntüle</h2>
+                <button class="modal-close" onclick="closeImagePreview()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div style="padding: 1rem; text-align: center; max-height: 70vh; overflow: auto;">
+                <img id="imagePreviewImg" src="" alt="Preview"
+                    style="max-width: 100%; max-height: 65vh; object-fit: contain;">
+            </div>
+        </div>
+    </div>
+
     <!-- Create Service Modal -->
     <div id="createServiceModal" class="modal">
         <div class="modal-content">
@@ -268,9 +284,12 @@
             const isImage = doc.fileType && doc.fileType.startsWith('image/');
             const isPdf = doc.fileType && doc.fileType.includes('pdf');
 
+            // Convert relative path to absolute URL
+            const fileUrl = doc.filePath ? `https://localhost:7291${doc.filePath}` : null;
+
             let iconHtml = '';
-            if (doc.filePath && isImage) {
-                iconHtml = `<img src="${doc.filePath}" class="document-preview" alt="${doc.title}">`;
+            if (fileUrl && isImage) {
+                iconHtml = `<img src="${fileUrl}" class="document-preview" alt="${doc.title}">`;
             } else {
                 const iconClass = isPdf ? 'fa-file-pdf pdf' : 'fa-file image';
                 iconHtml = `<div class="document-icon ${isPdf ? 'pdf' : 'image'}"><i class="fas ${iconClass}"></i></div>`;
@@ -294,7 +313,7 @@
                     </div>
                 </div>
                 <div class="document-actions">
-                    ${doc.filePath ? `<button class="btn btn-primary btn-sm" onclick="viewDocument('${doc.filePath}', ${isPdf})"><i class="fas fa-eye"></i> Görüntüle</button>` : ''}
+                    ${fileUrl ? `<button class="btn btn-primary btn-sm" onclick="viewDocument('${fileUrl}', ${isPdf})"><i class="fas fa-eye"></i> Görüntüle</button>` : ''}
                     <button class="btn btn-secondary btn-sm" onclick='editDocument(${JSON.stringify(doc)})'><i class="fas fa-edit"></i> Düzenle</button>
                     <button class="btn btn-danger btn-sm" onclick="deleteDocument('${doc.id}')"><i class="fas fa-trash"></i></button>
                 </div>
@@ -392,10 +411,18 @@
 
         function viewDocument(filePath, isPdf) {
             if (isPdf) {
+                // Open PDF in new tab
                 window.open(filePath, '_blank');
             } else {
-                window.open(filePath, '_blank');
+                // Show image in modal
+                document.getElementById('imagePreviewImg').src = filePath;
+                document.getElementById('imagePreviewModal').style.display = 'flex';
             }
+        }
+
+        function closeImagePreview() {
+            document.getElementById('imagePreviewModal').style.display = 'none';
+            document.getElementById('imagePreviewImg').src = '';
         }
 
         // File Upload Handling
@@ -514,12 +541,16 @@
         window.onclick = function (event) {
             const serviceModal = document.getElementById('createServiceModal');
             const documentModal = document.getElementById('documentModal');
+            const imageModal = document.getElementById('imagePreviewModal');
 
             if (event.target === serviceModal) {
                 closeCreateServiceModal();
             }
             if (event.target === documentModal) {
                 closeDocumentModal();
+            }
+            if (event.target === imageModal) {
+                closeImagePreview();
             }
         }
 

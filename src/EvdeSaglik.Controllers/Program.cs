@@ -105,6 +105,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseSerilogRequestLogging();
 
+app.UseStaticFiles(); // Enable static file serving for uploaded documents
+
 app.UseHttpsRedirection();
 
 app.UseCors("AllowFrontend");
