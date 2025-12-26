@@ -141,6 +141,12 @@ public class DoctorService : IDoctorService
         if (service.DoctorId != doctor.Id)
             throw new UnauthorizedAccessException("You can only delete your own services");
 
+        // Check if there are any appointments associated with this service
+        var hasAppointments = await _unitOfWork.Appointments.HasAppointmentsForServiceAsync(serviceId);
+        if (hasAppointments)
+        {
+            throw new InvalidOperationException("Bu hizmet silinemez çünkü bu hizmete ait randevular bulunmaktadır. Lütfen önce randevuları iptal edin veya hizmeti pasif hale getirin.");
+        }
         
         _unitOfWork.Services.Remove(service);
         await _unitOfWork.SaveChangesAsync();
@@ -605,6 +611,66 @@ public class DoctorService : IDoctorService
 
         await _unitOfWork.DoctorDocuments.DeleteAsync(documentId);
         await _unitOfWork.SaveChangesAsync();
+    }
+
+    #endregion
+
+    #region Profile Management
+
+    public async Task<DoctorDto> GetMyProfileAsync(Guid userId)
+    {
+        var doctor = await _unitOfWork.Doctors.GetByUserIdAsync(userId);
+        if (doctor == null)
+            throw new Exception("Doctor not found");
+
+        return new DoctorDto
+        {
+            Id = doctor.Id,
+            UserId = doctor.UserId,
+            Email = doctor.User.Email!,
+            FirstName = doctor.User.FirstName,
+            LastName = doctor.User.LastName,
+            PhoneNumber = doctor.User.PhoneNumber ?? "",
+            Specialization = doctor.Specialization,
+            LicenseNumber = doctor.LicenseNumber,
+            YearsOfExperience = doctor.YearsOfExperience,
+            Bio = doctor.Bio,
+            HourlyRate = doctor.HourlyRate,
+            IsApproved = doctor.IsApproved,
+            ApprovedAt = doctor.ApprovedAt
+        };
+    }
+
+    public async Task<DoctorDto> UpdateMyProfileAsync(Guid userId, UpdateDoctorProfileDto dto)
+    {
+        var doctor = await _unitOfWork.Doctors.GetByUserIdAsync(userId);
+        if (doctor == null)
+            throw new Exception("Doctor not found");
+
+        doctor.Specialization = dto.Specialization;
+        doctor.LicenseNumber = dto.LicenseNumber;
+        doctor.YearsOfExperience = dto.YearsOfExperience;
+        doctor.Bio = dto.Bio;
+
+        _unitOfWork.Doctors.Update(doctor);
+        await _unitOfWork.SaveChangesAsync();
+
+        return new DoctorDto
+        {
+            Id = doctor.Id,
+            UserId = doctor.UserId,
+            Email = doctor.User.Email!,
+            FirstName = doctor.User.FirstName,
+            LastName = doctor.User.LastName,
+            PhoneNumber = doctor.User.PhoneNumber ?? "",
+            Specialization = doctor.Specialization,
+            LicenseNumber = doctor.LicenseNumber,
+            YearsOfExperience = doctor.YearsOfExperience,
+            Bio = doctor.Bio,
+            HourlyRate = doctor.HourlyRate,
+            IsApproved = doctor.IsApproved,
+            ApprovedAt = doctor.ApprovedAt
+        };
     }
 
     #endregion

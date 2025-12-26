@@ -52,4 +52,9 @@ public class AppointmentRepository : GenericRepository<Appointment>, IAppointmen
             .OrderBy(a => a.ScheduledDateTime)
             .ToListAsync();
     }
+
+    public async Task<bool> HasAppointmentsForServiceAsync(Guid serviceId)
+    {
+        return await _dbSet.AnyAsync(a => a.ServiceId == serviceId);
+    }
 }

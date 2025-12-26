@@ -150,6 +150,13 @@ const api = {
             return api.request('/doctor/profile');
         },
 
+        async updateProfile(data) {
+            return api.request('/doctor/profile', {
+                method: 'PUT',
+                body: JSON.stringify(data)
+            });
+        },
+
         async getServices() {
             return api.request('/doctor/services');
         },

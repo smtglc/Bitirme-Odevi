@@ -31,4 +31,8 @@ public interface IDoctorService
     Task<DoctorDocumentDto> CreateDocumentAsync(Guid userId, CreateDoctorDocumentDto dto, Microsoft.AspNetCore.Http.IFormFile? file);
     Task<DoctorDocumentDto> UpdateDocumentAsync(Guid userId, Guid documentId, UpdateDoctorDocumentDto dto, Microsoft.AspNetCore.Http.IFormFile? file);
     Task DeleteDocumentAsync(Guid userId, Guid documentId);
+    
+    // Profile Management
+    Task<DoctorDto> GetMyProfileAsync(Guid userId);
+    Task<DoctorDto> UpdateMyProfileAsync(Guid userId, UpdateDoctorProfileDto dto);
 }

@@ -346,4 +346,38 @@ public class DoctorController : ControllerBase
     }
 
     #endregion
+
+    #region Profile Management
+
+    [HttpGet("profile")]
+    public async Task<ActionResult<ApiResponse<DoctorDto>>> GetProfile()
+    {
+        try
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var profile = await _doctorService.GetMyProfileAsync(userId);
+            return Ok(ApiResponse<DoctorDto>.SuccessResponse(profile));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ApiResponse<DoctorDto>.FailureResponse(ex.Message));
+        }
+    }
+
+    [HttpPut("profile")]
+    public async Task<ActionResult<ApiResponse<DoctorDto>>> UpdateProfile([FromBody] UpdateDoctorProfileDto dto)
+    {
+        try
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var profile = await _doctorService.UpdateMyProfileAsync(userId, dto);
+            return Ok(ApiResponse<DoctorDto>.SuccessResponse(profile, "Profile updated successfully"));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ApiResponse<DoctorDto>.FailureResponse(ex.Message));
+        }
+    }
+
+    #endregion
 }
