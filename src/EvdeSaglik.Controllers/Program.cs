@@ -75,6 +75,10 @@ builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
+builder.Services.AddScoped<IChatService, ChatService>();
+
+// Add HttpClient for ChatService
+builder.Services.AddHttpClient();
 
 // Add CORS
 builder.Services.AddCors(options =>

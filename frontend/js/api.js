@@ -289,6 +289,16 @@ const api = {
                 method: 'PUT'
             });
         }
+    },
+
+    // Chat endpoints
+    chat: {
+        async sendMessage(message, history = []) {
+            return api.request('/chat', {
+                method: 'POST',
+                body: JSON.stringify({ message, history })
+            });
+        }
     }
 };
 
