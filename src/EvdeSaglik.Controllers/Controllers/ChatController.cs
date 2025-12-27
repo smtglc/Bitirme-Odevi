@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace EvdeSaglik.Controllers.Controllers;
 
-[Authorize(Roles = "Doctor")]
+[Authorize(Roles = "Doctor,Patient")]
 [ApiController]
 [Route("api/[controller]")]
 public class ChatController : ControllerBase

@@ -31,11 +31,29 @@ public class ChatService : IChatService
     {
         try
         {
+            // Determine user role
+            var doctor = await _unitOfWork.Doctors.GetByUserIdAsync(userId);
+            var isDoctor = doctor != null;
+            
             var contextInfo = await BuildContextAsync(userId, request.Message);
-            var systemMessage = $@"Sen bir sağlık asistanısın. Doktorlara randevuları, hizmetleri ve diğer bilgileri hakkında yardımcı oluyorsun. 
+            
+            string systemMessage;
+            if (isDoctor)
+            {
+                systemMessage = $@"Sen bir doktor asistanısın. Doktorlara randevuları, hastaları ve hizmetleri hakkında bilgi veriyorsun.
+Kullanıcı bir DOKTOR'dur. Ona 'Sayın Doktor' diye hitap et.
 Türkçe konuş, kibar ve profesyonel ol. Kısa ve öz cevaplar ver.
 
 {contextInfo}";
+            }
+            else
+            {
+                systemMessage = $@"Sen bir hasta asistanısın. Hastalara randevuları, doktorları ve hizmetler hakkında bilgi veriyorsun.
+Kullanıcı bir HASTA'dır. Ona adıyla hitap edebilirsin.
+Türkçe konuş, kibar ve profesyonel ol. Kısa ve öz cevaplar ver.
+
+{contextInfo}";
+            }
 
             var messages = new List<object>
             {
@@ -268,66 +286,275 @@ Türkçe konuş, kibar ve profesyonel ol. Kısa ve öz cevaplar ver.
 
         try
         {
+            // Check if user is a doctor
             var doctor = await _unitOfWork.Doctors.GetByUserIdAsync(userId);
-            if (doctor == null) return "";
-
-            if (messageLower.Contains("randevu") || messageLower.Contains("appointment") ||
-                messageLower.Contains("bugün") || messageLower.Contains("yarın") || messageLower.Contains("yakın"))
+            if (doctor != null)
             {
-                var appointments = await _unitOfWork.Appointments.GetByDoctorIdAsync(doctor.Id);
-                var upcomingAppointments = appointments
-                    .Where(a => a.ScheduledDateTime >= DateTime.UtcNow && a.Status != AppointmentStatus.Cancelled)
-                    .OrderBy(a => a.ScheduledDateTime)
-                    .ToList();
-
-                contextInfo.AppendLine("\n--- RANDEVU BİLGİLERİ ---");
-                contextInfo.AppendLine($"Toplam randevu: {appointments.Count()}");
-                contextInfo.AppendLine($"Yaklaşan randevu: {upcomingAppointments.Count}");
-
-                if (upcomingAppointments.Any())
-                {
-                    var nextAppointment = upcomingAppointments.First();
-                    contextInfo.AppendLine($"En yakın randevu: {nextAppointment.ScheduledDateTime:dd.MM.yyyy HH:mm} - {nextAppointment.Patient.User.FirstName} {nextAppointment.Patient.User.LastName}");
-                }
-
-                var todayAppointments = upcomingAppointments
-                    .Where(a => a.ScheduledDateTime.Date == DateTime.UtcNow.Date)
-                    .ToList();
-                contextInfo.AppendLine($"Bugünkü randevu: {todayAppointments.Count}");
-
-                if (todayAppointments.Any())
-                {
-                    contextInfo.AppendLine("Bugünkü randevular:");
-                    foreach (var apt in todayAppointments.Take(5))
-                    {
-                        contextInfo.AppendLine($"  - {apt.ScheduledDateTime:HH:mm} {apt.Patient.User.FirstName} {apt.Patient.User.LastName} ({apt.Service.Name})");
-                    }
-                }
+                return await BuildDoctorContextAsync(doctor, messageLower);
             }
 
-            if (messageLower.Contains("hizmet") || messageLower.Contains("service"))
+            // Check if user is a patient
+            var patient = await _unitOfWork.Patients.GetByUserIdAsync(userId);
+            if (patient != null)
             {
-                var services = await _unitOfWork.Services.GetServicesByDoctorIdAsync(doctor.Id);
-                contextInfo.AppendLine("\n--- HİZMET BİLGİLERİ ---");
-                contextInfo.AppendLine($"Toplam hizmet: {services.Count()}");
-                contextInfo.AppendLine($"Aktif hizmet: {services.Count(s => s.IsActive)}");
-
-                if (services.Any())
-                {
-                    contextInfo.AppendLine("Hizmetler:");
-                    foreach (var service in services.Take(5))
-                    {
-                        contextInfo.AppendLine($"  - {service.Name} ({service.Specialization}) - {service.BasePrice} TL");
-                    }
-                }
+                return await BuildPatientContextAsync(patient, messageLower);
             }
         }
         catch
         {
-            // Hata durumunda boş context döndür
+            // Return empty context on error
         }
 
         return contextInfo.ToString();
+    }
+
+    private async Task<string> BuildDoctorContextAsync(Doctor doctor, string messageLower)
+    {
+        var contextInfo = new StringBuilder();
+
+        if (messageLower.Contains("randevu") || messageLower.Contains("appointment") ||
+            messageLower.Contains("bugün") || messageLower.Contains("yarın") || messageLower.Contains("yakın") ||
+            messageLower.Contains("geçmiş") || messageLower.Contains("tamamlanan") || messageLower.Contains("bekleyen"))
+        {
+            var appointments = await _unitOfWork.Appointments.GetByDoctorIdAsync(doctor.Id);
+            var upcomingAppointments = appointments
+                .Where(a => a.ScheduledDateTime >= DateTime.UtcNow && a.Status != AppointmentStatus.Cancelled)
+                .OrderBy(a => a.ScheduledDateTime)
+                .ToList();
+
+            contextInfo.AppendLine("\n--- RANDEVU BİLGİLERİ ---");
+            contextInfo.AppendLine($"Toplam randevu: {appointments.Count()}");
+            contextInfo.AppendLine($"Yaklaşan randevu: {upcomingAppointments.Count}");
+
+            if (upcomingAppointments.Any())
+            {
+                var nextAppointment = upcomingAppointments.First();
+                contextInfo.AppendLine($"En yakın randevu: {nextAppointment.ScheduledDateTime:dd.MM.yyyy HH:mm} - {nextAppointment.Patient.User.FirstName} {nextAppointment.Patient.User.LastName}");
+            }
+
+            var todayAppointments = upcomingAppointments
+                .Where(a => a.ScheduledDateTime.Date == DateTime.UtcNow.Date)
+                .ToList();
+            contextInfo.AppendLine($"Bugünkü randevu: {todayAppointments.Count}");
+
+            if (todayAppointments.Any())
+            {
+                contextInfo.AppendLine("Bugünkü randevular:");
+                foreach (var apt in todayAppointments.Take(5))
+                {
+                    contextInfo.AppendLine($"  - {apt.ScheduledDateTime:HH:mm} {apt.Patient.User.FirstName} {apt.Patient.User.LastName} ({apt.Service.Name})");
+                }
+            }
+
+            // Pending appointments
+            var pendingAppointments = appointments
+                .Where(a => a.Status == AppointmentStatus.Pending)
+                .OrderBy(a => a.ScheduledDateTime)
+                .Take(5)
+                .ToList();
+
+            if (pendingAppointments.Any())
+            {
+                contextInfo.AppendLine($"\nOnay Bekleyen Randevular ({pendingAppointments.Count}):");
+                foreach (var apt in pendingAppointments)
+                {
+                    contextInfo.AppendLine($"  - {apt.ScheduledDateTime:dd.MM.yyyy HH:mm} - {apt.Patient.User.FirstName} {apt.Patient.User.LastName} ({apt.Service.Name})");
+                }
+            }
+
+            // Completed appointments
+            var completedAppointments = appointments
+                .Where(a => a.Status == AppointmentStatus.Completed)
+                .OrderByDescending(a => a.ScheduledDateTime)
+                .Take(5)
+                .ToList();
+
+            if (completedAppointments.Any())
+            {
+                contextInfo.AppendLine($"\nTamamlanan Randevular (son {completedAppointments.Count}):");
+                foreach (var apt in completedAppointments)
+                {
+                    contextInfo.AppendLine($"  - {apt.ScheduledDateTime:dd.MM.yyyy HH:mm} - {apt.Patient.User.FirstName} {apt.Patient.User.LastName} ({apt.Service.Name})");
+                }
+            }
+
+            // Cancelled appointments
+            var cancelledAppointments = appointments
+                .Where(a => a.Status == AppointmentStatus.Cancelled)
+                .OrderByDescending(a => a.ScheduledDateTime)
+                .Take(3)
+                .ToList();
+
+            if (cancelledAppointments.Any())
+            {
+                contextInfo.AppendLine($"\nİptal Edilen Randevular (son {cancelledAppointments.Count}):");
+                foreach (var apt in cancelledAppointments)
+                {
+                    contextInfo.AppendLine($"  - {apt.ScheduledDateTime:dd.MM.yyyy HH:mm} - {apt.Patient.User.FirstName} {apt.Patient.User.LastName} ({apt.Service.Name})");
+                }
+            }
+        }
+
+        if (messageLower.Contains("hizmet") || messageLower.Contains("service"))
+        {
+            var services = await _unitOfWork.Services.GetServicesByDoctorIdAsync(doctor.Id);
+            contextInfo.AppendLine("\n--- HİZMET BİLGİLERİ ---");
+            contextInfo.AppendLine($"Toplam hizmet: {services.Count()}");
+            contextInfo.AppendLine($"Aktif hizmet: {services.Count(s => s.IsActive)}");
+
+            if (services.Any())
+            {
+                contextInfo.AppendLine("Hizmetler:");
+                foreach (var service in services.Take(5))
+                {
+                    contextInfo.AppendLine($"  - {service.Name} ({service.Specialization}) - {service.BasePrice} TL");
+                }
+            }
+        }
+
+        return contextInfo.ToString();
+    }
+
+    private async Task<string> BuildPatientContextAsync(Patient patient, string messageLower)
+    {
+        var contextInfo = new StringBuilder();
+
+        if (messageLower.Contains("randevu") || messageLower.Contains("appointment") ||
+            messageLower.Contains("bugün") || messageLower.Contains("yarın") || messageLower.Contains("yakın") ||
+            messageLower.Contains("geçmiş") || messageLower.Contains("tamamlanan"))
+        {
+            var appointments = await _unitOfWork.Appointments.GetByPatientIdAsync(patient.Id);
+            var upcomingAppointments = appointments
+                .Where(a => a.ScheduledDateTime >= DateTime.UtcNow && a.Status != AppointmentStatus.Cancelled)
+                .OrderBy(a => a.ScheduledDateTime)
+                .ToList();
+
+            contextInfo.AppendLine("\n--- RANDEVU BİLGİLERİNİZ ---");
+            contextInfo.AppendLine($"Toplam randevu: {appointments.Count()}");
+            contextInfo.AppendLine($"Yaklaşan randevu: {upcomingAppointments.Count}");
+
+            if (upcomingAppointments.Any())
+            {
+                var nextAppointment = upcomingAppointments.First();
+                contextInfo.AppendLine($"En yakın randevu: {nextAppointment.ScheduledDateTime:dd.MM.yyyy HH:mm}");
+                contextInfo.AppendLine($"Doktor: Dr. {nextAppointment.Doctor.User.FirstName} {nextAppointment.Doctor.User.LastName}");
+                contextInfo.AppendLine($"Hizmet: {nextAppointment.Service.Name}");
+                contextInfo.AppendLine($"Durum: {GetStatusText(nextAppointment.Status)}");
+                contextInfo.AppendLine($"Ücret: {nextAppointment.TotalAmount} TL");
+            }
+
+            // Pending appointments
+            var pendingAppointments = appointments
+                .Where(a => a.Status == AppointmentStatus.Pending)
+                .ToList();
+
+            if (pendingAppointments.Any())
+            {
+                contextInfo.AppendLine($"\nOnay bekleyen randevu: {pendingAppointments.Count}");
+            }
+
+            // Today's appointments
+            var todayAppointments = upcomingAppointments
+                .Where(a => a.ScheduledDateTime.Date == DateTime.UtcNow.Date)
+                .ToList();
+
+            if (todayAppointments.Any())
+            {
+                contextInfo.AppendLine($"\nBugünkü randevu: {todayAppointments.Count}");
+                foreach (var apt in todayAppointments)
+                {
+                    contextInfo.AppendLine($"  - {apt.ScheduledDateTime:HH:mm} Dr. {apt.Doctor.User.FirstName} {apt.Doctor.User.LastName} ({apt.Service.Name})");
+                }
+            }
+
+            // Completed appointments
+            var completedAppointments = appointments
+                .Where(a => a.Status == AppointmentStatus.Completed)
+                .OrderByDescending(a => a.ScheduledDateTime)
+                .Take(5)
+                .ToList();
+
+            if (completedAppointments.Any())
+            {
+                contextInfo.AppendLine($"\nGeçmiş Randevular (son {completedAppointments.Count}):");
+                foreach (var apt in completedAppointments)
+                {
+                    contextInfo.AppendLine($"  - {apt.ScheduledDateTime:dd.MM.yyyy HH:mm} - Dr. {apt.Doctor.User.FirstName} {apt.Doctor.User.LastName} ({apt.Doctor.Specialization}) - {apt.Service.Name}");
+                }
+            }
+        }
+
+        // Service search for patients
+        if (messageLower.Contains("hizmet") || messageLower.Contains("service") ||
+            messageLower.Contains("doktor") || messageLower.Contains("branş") ||
+            messageLower.Contains("psikiyatri") || messageLower.Contains("kardiyoloji") ||
+            messageLower.Contains("nöroloji") || messageLower.Contains("ortopedi") ||
+            messageLower.Contains("fizik tedavi") || messageLower.Contains("pediatri"))
+        {
+            var activeServicesEnumerable = await _unitOfWork.Services.GetAllActiveServicesAsync();
+            var activeServices = activeServicesEnumerable.ToList();
+
+            if (activeServices.Any())
+            {
+                contextInfo.AppendLine("\n--- MEVCUT HİZMETLER ---");
+                contextInfo.AppendLine($"Toplam aktif hizmet: {activeServices.Count}");
+
+                var servicesBySpecialization = activeServices
+                    .GroupBy(s => s.Specialization)
+                    .OrderBy(g => g.Key)
+                    .ToList();
+
+                contextInfo.AppendLine("\nBranşlara göre hizmetler:");
+                foreach (var group in servicesBySpecialization)
+                {
+                    var specializationText = GetSpecializationText(group.Key);
+                    contextInfo.AppendLine($"\n{specializationText}:");
+                    foreach (var service in group.Take(3))
+                    {
+                        contextInfo.AppendLine($"  - {service.Name} - Dr. {service.Doctor.User.FirstName} {service.Doctor.User.LastName} - {service.BasePrice} TL");
+                    }
+                }
+            }
+            else
+            {
+                contextInfo.AppendLine("\n--- HİZMET BİLGİSİ ---");
+                contextInfo.AppendLine("Şu anda aktif hizmet bulunmamaktadır.");
+            }
+        }
+
+        return contextInfo.ToString();
+    }
+
+    private string GetStatusText(AppointmentStatus status)
+    {
+        return status switch
+        {
+            AppointmentStatus.Pending => "Onay Bekliyor",
+            AppointmentStatus.Confirmed => "Onaylandı",
+            AppointmentStatus.Completed => "Tamamlandı",
+            AppointmentStatus.Cancelled => "İptal Edildi",
+            _ => status.ToString()
+        };
+    }
+
+    private string GetSpecializationText(MedicalSpecialization specialization)
+    {
+        return specialization switch
+        {
+            MedicalSpecialization.GeneralMedicine => "Genel Tıp",
+            MedicalSpecialization.Cardiology => "Kardiyoloji",
+            MedicalSpecialization.Neurology => "Nöroloji",
+            MedicalSpecialization.Orthopedics => "Ortopedi",
+            MedicalSpecialization.GeneralSurgery => "Genel Cerrahi",
+            MedicalSpecialization.PhysicalTherapy => "Fizik Tedavi",
+            MedicalSpecialization.NursingServices => "Hemşirelik Hizmetleri",
+            MedicalSpecialization.LaboratoryServices => "Laboratuvar Hizmetleri",
+            MedicalSpecialization.Dermatology => "Dermatoloji",
+            MedicalSpecialization.Pediatrics => "Pediatri",
+            MedicalSpecialization.Gynecology => "Jinekoloji",
+            MedicalSpecialization.Psychiatry => "Psikiyatri",
+            _ => specialization.ToString()
+        };
     }
 
     // OpenRouter API Response Models
